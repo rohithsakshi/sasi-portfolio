@@ -4,38 +4,40 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
 
 const PARTS = [
-  // Phillips Screw
-  { id: "screw", path: "M5,10 L15,10 M10,5 L10,15 M10,10 m-7,0 a7,7 0 1,0 14,0 a7,7 0 1,0 -14,0", initial: { x: -80, y: -90, r: -120 }, target: { x: 35, y: 45, r: 0, s: 0.4 } },
-  // Hinge Plate
-  { id: "hinge", path: "M0,0 L12,0 L12,25 L0,25 Z M6,5 L6,5.1 M6,12.5 L6,12.6 M6,20 L6,20.1", initial: { x: 130, y: -60, r: 45 }, target: { x: -48, y: 15, r: 0, s: 0.6 } },
-  // Door Handle Silhouette
-  { id: "handle", path: "M0,10 L15,10 L15,0 M15,10 L15,40 M15,10 L5,10", initial: { x: -140, y: 120, r: 200 }, target: { x: 42, y: 40, r: 0, s: 0.5 } },
-  // Frame Rail
-  { id: "rail", path: "M0,0 L4,0 L4,80 L0,80 Z", initial: { x: 160, y: 140, r: -30 }, target: { x: -45, y: 0, r: 0, s: 0.8 } },
-  // Corner Bracket
-  { id: "bracket", path: "M0,0 L15,0 L15,4 L4,4 L4,15 L0,15 Z", initial: { x: -40, y: 160, r: -90 }, target: { x: 40, y: -65, r: 0, s: 0.7 } },
+  // Phillips head screw (top-left)
+  { id: "screw", path: "M10,10 m-6,0 a6,6 0 1,0 12,0 a6,6 0 1,0 -12,0 M7,10 L13,10 M10,7 L10,13", start: { x: -150, y: -150, r: -90 }, target: { x: -35, y: -45, r: 0, s: 0.35 } },
+  // Hinge plate (left)
+  { id: "hinge", path: "M0,0 L12,0 L12,30 L0,30 Z M6,6 L6,6.1 M6,15 L6,15.1 M6,24 L6,24.1", start: { x: -200, y: 0, r: 45 }, target: { x: -55, y: 0, r: 0, s: 0.5 } },
+  // Circular door knob (right)
+  { id: "knob", path: "M20,20 m-12,0 a12,12 0 1,0 24,0 a12,12 0 1,0 -24,0 M20,20 m-6,0 a6,6 0 1,0 12,0 a6,6 0 1,0 -12,0", start: { x: 200, y: 50, r: 180 }, target: { x: 38, y: 15, r: 0, s: 0.4 } },
+  // Thin frame rail (top)
+  { id: "rail", path: "M0,0 L80,0 L80,4 L0,4 Z", start: { x: 0, y: -200, r: -10 }, target: { x: 0, y: -78, r: 0, s: 1 } },
+  // Corner bracket (bottom-right)
+  { id: "bracket", path: "M0,0 L20,0 L20,6 L6,6 L6,20 L0,20 Z", start: { x: 180, y: 180, r: 120 }, target: { x: 45, y: -72, r: 0, s: 0.6 } },
 ];
 
 export const PortfolioLoader = () => {
   const [isVisible, setIsVisible] = useState(true);
-  const [stage, setStage] = useState<"float" | "assemble" | "exit">("float");
+  const [phase, setPhase] = useState<number>(0);
 
   useEffect(() => {
-    const hasVisited = sessionStorage.getItem("hasVisitedPortfolio");
+    const hasVisited = sessionStorage.getItem("hasVisitedPortfolio_v2");
     if (hasVisited) {
       setIsVisible(false);
       return;
     }
 
-    const assembleTimer = setTimeout(() => setStage("assemble"), 1200);
-    const exitTimer = setTimeout(() => {
+    // Phase Timings
+    const t1 = setTimeout(() => setPhase(1), 800);   // Snap into place & render frame
+    const t2 = setTimeout(() => setPhase(2), 1600);  // Assembly complete pause
+    const t3 = setTimeout(() => setPhase(3), 2000);  // Text reveal
+    const t4 = setTimeout(() => {
       setIsVisible(false);
-      sessionStorage.setItem("hasVisitedPortfolio", "true");
-    }, 3500);
+      sessionStorage.setItem("hasVisitedPortfolio_v2", "true");
+    }, 4500); // Wait longer to see the idle state
 
     return () => {
-      clearTimeout(assembleTimer);
-      clearTimeout(exitTimer);
+      [t1, t2, t3, t4].forEach(clearTimeout);
     };
   }, []);
 
@@ -44,23 +46,38 @@ export const PortfolioLoader = () => {
       {isVisible && (
         <motion.div
           exit={{ 
-            y: "-100%",
-            transition: { duration: 0.8, ease: [0.76, 0, 0.24, 1] }
+            opacity: 0,
+            transition: { duration: 1, ease: [0.76, 0, 0.24, 1] }
           }}
           style={{
             position: "fixed",
             inset: 0,
             zIndex: 10000,
-            background: "var(--background)",
+            background: "#0a0a0a",
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
             justifyContent: "center",
           }}
         >
-          <div style={{ position: "relative", width: "300px", height: "300px", display: "flex", alignItems: "center", justifyContent: "center" }}>
+          {/* ASSEMBLY CONTAINER */}
+          <motion.div
+            animate={phase >= 2 ? {
+              y: [0, -4, 0],
+              transition: { duration: 4, repeat: Infinity, ease: "easeInOut" }
+            } : {}}
+            style={{ 
+              position: "relative", 
+              width: "200px", 
+              height: "260px", 
+              display: "flex", 
+              alignItems: "center", 
+              justifyContent: "center",
+              marginTop: "-10vh" // Upper third placement
+            }}
+          >
             
-            {/* STAGE 2: DOOR OUTLINE (Blueprint) */}
+            {/* DOOR FRAME OUTLINE */}
             <motion.svg
               viewBox="0 0 100 160"
               style={{
@@ -70,47 +87,77 @@ export const PortfolioLoader = () => {
                 overflow: "visible",
               }}
             >
+              {/* Main Frame */}
               <motion.rect
                 x="0" y="0" width="100" height="160"
                 fill="none"
-                stroke="var(--white)"
+                stroke="#666"
                 strokeWidth="0.75"
                 initial={{ pathLength: 0, opacity: 0 }}
-                animate={stage !== "float" ? { pathLength: 1, opacity: 0.4 } : {}}
-                transition={{ duration: 1.2, ease: "easeInOut" }}
+                animate={phase >= 1 ? { pathLength: 1, opacity: 1 } : {}}
+                transition={{ duration: 0.8, ease: "easeOut" }}
               />
+              
+              {/* Vertical Panels */}
               <motion.path
-                d="M10,10 L90,10 L90,150 L10,150 Z"
+                d="M10,10 L10,150 M50,10 L50,150 M90,10 L90,150"
                 fill="none"
-                stroke="var(--white)"
+                stroke="#444"
                 strokeWidth="0.5"
-                initial={{ pathLength: 0, opacity: 0 }}
-                animate={stage !== "float" ? { pathLength: 1, opacity: 0.2 } : {}}
-                transition={{ duration: 1.2, delay: 0.2 }}
+                initial={{ pathLength: 0 }}
+                animate={phase >= 1 ? { pathLength: 1 } : {}}
+                transition={{ duration: 0.8, delay: 0.2 }}
               />
+
+              {/* Horizontal Divider */}
+              <motion.line
+                x1="10" y1="80" x2="90" y2="80"
+                stroke="#444"
+                strokeWidth="0.5"
+                initial={{ scaleX: 0 }}
+                animate={phase >= 1 ? { scaleX: 1 } : {}}
+                transition={{ duration: 0.6, delay: 0.4 }}
+              />
+
+              {/* Corner Marks (Small Squares) */}
+              {[
+                { x: -2, y: -2 }, { x: 98, y: -2 },
+                { x: -2, y: 158 }, { x: 98, y: 158 }
+              ].map((pos, i) => (
+                <motion.rect
+                  key={i}
+                  x={pos.x} y={pos.y} width="4" height="4"
+                  fill="none"
+                  stroke="#555"
+                  strokeWidth="0.5"
+                  initial={{ opacity: 0 }}
+                  animate={phase >= 1 ? { opacity: 1 } : {}}
+                  transition={{ delay: 0.8 + i * 0.05 }}
+                />
+              ))}
             </motion.svg>
 
-            {/* STAGE 1: FLOATING HARDWARE */}
+            {/* HARDWARE PARTS */}
             {PARTS.map((part, i) => (
               <motion.div
                 key={part.id}
                 style={{ position: "absolute" }}
                 initial={{ 
-                  x: part.initial.x, 
-                  y: part.initial.y, 
-                  rotate: part.initial.r, 
+                  x: part.start.x, 
+                  y: part.start.y, 
+                  rotate: part.start.r, 
                   opacity: 0 
                 }}
-                animate={stage === "float" ? {
-                  x: [part.initial.x, part.initial.x + 10, part.initial.x],
-                  y: [part.initial.y, part.initial.y - 15, part.initial.y],
-                  rotate: [part.initial.r, part.initial.r + 5, part.initial.r],
+                animate={phase === 0 ? {
+                  x: [part.start.x, part.start.x + 5, part.start.x],
+                  y: [part.start.y, part.start.y - 8, part.start.y],
+                  rotate: [part.start.r, part.start.r + 3, part.start.r],
                   opacity: 1,
                   transition: {
-                    x: { duration: 4, repeat: Infinity, ease: "easeInOut" },
-                    y: { duration: 5, repeat: Infinity, ease: "easeInOut" },
-                    rotate: { duration: 6, repeat: Infinity, ease: "easeInOut" },
-                    opacity: { duration: 0.8, delay: i * 0.2 }
+                    x: { duration: 3, repeat: Infinity, ease: "easeInOut" },
+                    y: { duration: 4, repeat: Infinity, ease: "easeInOut" },
+                    rotate: { duration: 5, repeat: Infinity, ease: "easeInOut" },
+                    opacity: { duration: 0.6, delay: i * 0.12 }
                   }
                 } : {
                   x: part.target.x,
@@ -118,50 +165,54 @@ export const PortfolioLoader = () => {
                   rotate: part.target.r,
                   scale: part.target.s,
                   opacity: 1,
-                  transition: { duration: 1, ease: [0.16, 1, 0.3, 1] }
+                  transition: { duration: 0.8, ease: [0.34, 1.56, 0.64, 1] } // Snappy ease
                 }}
               >
                 <svg width="40" height="40" viewBox="0 0 40 40" style={{ overflow: "visible" }}>
-                  <motion.path
+                  <path
                     d={part.path}
                     fill="none"
-                    stroke="var(--white)"
-                    strokeWidth="1.2"
+                    stroke="#888"
+                    strokeWidth="1.5"
                   />
                 </svg>
               </motion.div>
             ))}
-          </div>
+          </motion.div>
 
-          {/* STAGE 3: TEXT REVEAL */}
-          <div style={{ marginTop: "20px", height: "60px", overflow: "hidden" }}>
+          {/* TEXT REVEAL SECTION */}
+          <div style={{ height: "80px", marginTop: "10px", display: "flex", flexDirection: "column", alignItems: "center" }}>
             <motion.div
-              initial={{ y: 40, opacity: 0 }}
-              animate={stage !== "float" ? { y: 0, opacity: 1 } : {}}
-              transition={{ delay: 0.5, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+              initial={{ opacity: 0, y: 20 }}
+              animate={phase >= 3 ? { opacity: 1, y: 0 } : {}}
+              transition={{ duration: 0.6, ease: "easeOut" }}
               style={{ textAlign: "center" }}
             >
-              <h2 style={{ 
-                fontSize: "1rem", 
-                letterSpacing: "0.6em", 
-                fontWeight: 400, 
-                color: "var(--white)",
+              <h1 style={{ 
+                fontSize: "1.4rem", 
+                letterSpacing: "0.5em", 
+                fontWeight: 300, 
+                color: "#e0e0e0",
                 margin: 0,
-                textTransform: "uppercase",
-                fontFamily: "var(--font-display)"
+                textTransform: "uppercase"
               }}>
                 Sasidharan K.
-              </h2>
-              <p style={{ 
-                fontSize: "0.6rem", 
-                letterSpacing: "0.3em", 
-                color: "var(--slate)", 
-                marginTop: "10px",
-                textTransform: "uppercase",
-                fontWeight: 300
-              }}>
+              </h1>
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={phase >= 3 ? { opacity: 1 } : {}}
+                transition={{ delay: 0.3, duration: 0.8 }}
+                style={{ 
+                  fontSize: "0.65rem", 
+                  letterSpacing: "0.4em", 
+                  color: "#777", 
+                  marginTop: "12px",
+                  textTransform: "uppercase",
+                  fontWeight: 400
+                }}
+              >
                 Product Designer
-              </p>
+              </motion.div>
             </motion.div>
           </div>
         </motion.div>

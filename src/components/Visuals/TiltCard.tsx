@@ -8,9 +8,10 @@ interface TiltCardProps {
   children: React.ReactNode;
   className?: string;
   style?: React.CSSProperties;
+  onClick?: () => void;
 }
 
-export const TiltCard = ({ children, className, style }: TiltCardProps) => {
+export const TiltCard = ({ children, className, style, onClick }: TiltCardProps) => {
   const { setCursorVariant } = useCursor();
   const ref = useRef<HTMLDivElement>(null);
 
@@ -53,6 +54,7 @@ export const TiltCard = ({ children, className, style }: TiltCardProps) => {
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
       onMouseEnter={() => setCursorVariant("hover")}
+      onClick={onClick}
       style={{
         ...style,
         rotateX,

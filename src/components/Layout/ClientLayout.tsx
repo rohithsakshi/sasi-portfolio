@@ -3,7 +3,7 @@
 import { motion, useScroll, useSpring } from "framer-motion";
 import { CursorProvider } from "../Cursor/CursorProvider";
 import { Cursor } from "../Cursor/Cursor";
-import { PageTransition } from "../Navigation/Transitions";
+import { PortfolioLoader } from "../Navigation/PortfolioLoader";
 import { ReactNode } from "react";
 
 export const ClientLayout = ({ children }: { children: ReactNode }) => {
@@ -16,7 +16,7 @@ export const ClientLayout = ({ children }: { children: ReactNode }) => {
 
   return (
     <CursorProvider>
-      <PageTransition />
+      <PortfolioLoader />
       <motion.div
         style={{
           position: "fixed",

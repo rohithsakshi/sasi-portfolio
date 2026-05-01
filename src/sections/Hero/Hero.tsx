@@ -174,7 +174,7 @@ const Hero = () => {
         let targetX = -1.4;
         if (targetX < TEXT_SAFE_ZONE) targetX = TEXT_SAFE_ZONE;
         
-        group.position.set(targetX, -0.5, -0.3);
+        group.position.set(targetX, -0.8, -0.3);
       }
 
       camera.updateProjectionMatrix();
@@ -194,12 +194,27 @@ const Hero = () => {
       lastTime = timestamp;
       accumulatedTime += delta;
 
-      // Sine-wave animation timing (0 to 1)
-      const t = (Math.sin(accumulatedTime * 0.8) + 1) / 2;
+      // Animation timing with longer hold
+      const cycleDuration = 6; // seconds
+      const t = (accumulatedTime % cycleDuration) / cycleDuration;
       
+      let pRaw = 0;
+      if (t < 0.1) {
+        pRaw = 0; // Hold closed
+      } else if (t < 0.35) {
+        pRaw = (t - 0.1) / 0.25; // Opening
+      } else if (t < 0.75) {
+        pRaw = 1; // Hold open (much longer now)
+      } else {
+        pRaw = 1 - (t - 0.75) / 0.25; // Closing
+      }
+
+      // Mechanical smoothstep easing
+      const p = pRaw * pRaw * (3 - 2 * pRaw);
+
       const isMobile = window.innerWidth < 768;
       const MAX_OFFSET = isMobile ? 0.5 : 1.0;
-      const explodeOffset = t * MAX_OFFSET;
+      const explodeOffset = p * MAX_OFFSET;
 
       // Asymmetric Expansion
       const leftTarget = -explodeOffset * 0.8;
@@ -242,8 +257,13 @@ const Hero = () => {
   return (
     <section className={styles.heroSection} ref={containerRef}>
       {/* 3D Layer is now full width/height and acts as the background */}
-      <div className={styles.canvasContainer} ref={canvasContainerRef}>
-        <canvas ref={canvasRef} className={styles.webglCanvas} />
+      <div className={styles.productWrapper}>
+        <div className={styles.canvasContainer} ref={canvasContainerRef}>
+          <canvas ref={canvasRef} className={styles.webglCanvas} />
+        </div>
+        <div className={styles.productTagline}>
+          Extensible Portable Extension Box
+        </div>
       </div>
 
       {/* Z-indexed content layers */}

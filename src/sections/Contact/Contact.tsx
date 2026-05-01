@@ -1,123 +1,253 @@
 "use client";
-import { useRef } from "react";
-import { motion } from "framer-motion";
-import { RevealSection } from "../../components/RevealSection/RevealSection";
-import { TiltCard } from "../../components/Visuals/TiltCard";
-import { useCursor } from "../../components/Cursor/CursorProvider";
+
+import React, { useEffect, useRef, useState } from "react";
+import * as THREE from "three";
 
 export default function Contact() {
-  const { setCursorVariant } = useCursor();
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  useEffect(() => {
+    if (!canvasRef.current) return;
+    
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(45, canvasRef.current.clientWidth / canvasRef.current.clientHeight, 0.1, 100);
+    camera.position.z = 15;
+
+    const renderer = new THREE.WebGLRenderer({ canvas: canvasRef.current, alpha: true, antialias: true });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setSize(canvasRef.current.clientWidth, canvasRef.current.clientHeight);
+
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
+    scene.add(ambientLight);
+    
+    const dirLight = new THREE.DirectionalLight(0xc87533, 1.0); // Copper light
+    dirLight.position.set(5, 5, 5);
+    scene.add(dirLight);
+
+    const material = new THREE.MeshStandardMaterial({
+      color: 0x8B4513, // Saddle Brown
+      roughness: 0.8,
+      metalness: 0.1,
+      wireframe: true, // Wireframe for premium aesthetic without overpowering
+      transparent: true,
+      opacity: 0.2
+    });
+
+    const geometry = new THREE.IcosahedronGeometry(6, 1);
+    const mesh = new THREE.Mesh(geometry, material);
+    scene.add(mesh);
+
+    let animationFrameId: number;
+
+    const animate = () => {
+      animationFrameId = requestAnimationFrame(animate);
+      mesh.rotation.x += 0.001;
+      mesh.rotation.y += 0.002;
+      renderer.render(scene, camera);
+    };
+    animate();
+
+    const handleResize = () => {
+      if (!canvasRef.current) return;
+      camera.aspect = canvasRef.current.clientWidth / canvasRef.current.clientHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(canvasRef.current.clientWidth, canvasRef.current.clientHeight);
+    };
+    window.addEventListener("resize", handleResize);
+
+    return () => {
+      cancelAnimationFrame(animationFrameId);
+      window.removeEventListener("resize", handleResize);
+      renderer.dispose();
+      scene.clear();
+    };
+  }, []);
+
+  const [hoveredLink, setHoveredLink] = useState<number | null>(null);
 
   const links = [
-    { label: "Email", value: "Sasiharsha6602@gmail.com", href: "mailto:Sasiharsha6602@gmail.com", icon: "✉" },
-    { label: "LinkedIn", value: "linkedin.com/in/sasidharan", href: "https://www.linkedin.com/in/sasidharan", icon: "in" },
-    { label: "Behance", value: "behance.net/sasidharan14", href: "https://www.behance.net/sasidharan14", icon: "Bē" },
-    { label: "Phone", value: "+91 6382931941", href: "tel:+916382931941", icon: "☎" },
+    { label: "Email", value: "Sasiharsha6602@gmail.com", href: "mailto:Sasiharsha6602@gmail.com" },
+    { label: "LinkedIn", value: "linkedin.com/in/sasidharan", href: "https://www.linkedin.com/in/sasidharan" },
+    { label: "Behance", value: "behance.net/sasidharan14", href: "https://www.behance.net/sasidharan14" },
+    { label: "Phone", value: "+91 6382931941", href: "tel:+916382931941" },
   ];
 
   return (
-    <section id="contact" style={{ padding: "120px 24px 80px", position: "relative", zIndex: 10 }}>
-      <div style={{ maxWidth: 800, margin: "0 auto", textAlign: "center" }}>
-        <RevealSection>
-          <span className="section-tag">Let's Connect</span>
-          <h2 style={{ fontSize: "clamp(40px, 7vw, 64px)", fontWeight: 800, letterSpacing: -2, marginTop: 16, color: "var(--text-primary)", lineHeight: 1.1 }}>
-            Ready to create<br />
-            <span style={{
-              background: "linear-gradient(135deg, var(--royal), var(--sky))",
-              WebkitBackgroundClip: "text",
-              WebkitTextFillColor: "transparent",
-              backgroundClip: "text",
-            }}>
-              together?
-            </span>
-          </h2>
-          <p style={{ fontSize: 17, lineHeight: 1.75, color: "var(--text-muted)", marginTop: 20, marginBottom: 56, maxWidth: 500, margin: "20px auto 56px" }}>
-            I'm open to internships, freelance projects, and design collaborations. Let's build something meaningful.
-          </p>
-        </RevealSection>
+    <section 
+      id="contact" 
+      style={{ 
+        position: "relative", 
+        padding: "150px 24px", 
+        backgroundColor: "var(--wheat)",
+        minHeight: "100vh",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        overflow: "hidden"
+      }}
+    >
+      {/* 3D Background */}
+      <canvas 
+        ref={canvasRef} 
+        style={{ 
+          position: "absolute", 
+          top: 0, 
+          left: 0, 
+          width: "100%", 
+          height: "100%", 
+          pointerEvents: "none",
+          zIndex: 1 
+        }} 
+      />
 
-        <RevealSection delay={0.2}>
-          <motion.a
-            href="mailto:Sasiharsha6602@gmail.com"
-            onMouseEnter={() => setCursorVariant("hover")}
-            onMouseLeave={() => setCursorVariant("default")}
-            whileHover={{ scale: 1.05, boxShadow: "0 20px 60px rgba(26,110,245,0.5)" }}
-            whileTap={{ scale: 0.97 }}
+      <div style={{ position: "relative", zIndex: 10, maxWidth: "600px", width: "100%", textAlign: "center" }}>
+        <h2 style={{ 
+          fontFamily: "var(--font-display)", 
+          fontSize: "clamp(40px, 8vw, 80px)", 
+          fontWeight: 700, 
+          color: "var(--saddle-brown)",
+          textTransform: "uppercase",
+          marginBottom: "16px",
+          letterSpacing: "-0.02em"
+        }}>
+          Let's Connect
+        </h2>
+        <p style={{
+          fontFamily: "var(--font-main)",
+          fontSize: "16px",
+          color: "var(--saddle-brown)",
+          opacity: 0.8,
+          marginBottom: "60px",
+          lineHeight: 1.6
+        }}>
+          Open to freelance projects, internships, and design collaborations.
+        </p>
+
+        {/* Minimal Form */}
+        <form style={{ display: "flex", flexDirection: "column", gap: "30px", marginBottom: "60px" }} onSubmit={(e) => e.preventDefault()}>
+          <div style={{ position: "relative" }}>
+            <input 
+              type="text" 
+              placeholder="YOUR NAME" 
+              style={{
+                width: "100%",
+                background: "transparent",
+                border: "none",
+                borderBottom: "1px solid var(--saddle-brown)",
+                padding: "16px 0",
+                fontFamily: "var(--font-mono)",
+                fontSize: "14px",
+                color: "var(--saddle-brown)",
+                outline: "none",
+                textTransform: "uppercase",
+                letterSpacing: "0.1em"
+              }}
+            />
+          </div>
+          <div style={{ position: "relative" }}>
+            <input 
+              type="email" 
+              placeholder="EMAIL ADDRESS" 
+              style={{
+                width: "100%",
+                background: "transparent",
+                border: "none",
+                borderBottom: "1px solid var(--saddle-brown)",
+                padding: "16px 0",
+                fontFamily: "var(--font-mono)",
+                fontSize: "14px",
+                color: "var(--saddle-brown)",
+                outline: "none",
+                textTransform: "uppercase",
+                letterSpacing: "0.1em"
+              }}
+            />
+          </div>
+          <div style={{ position: "relative" }}>
+            <textarea 
+              placeholder="YOUR MESSAGE" 
+              rows={3}
+              style={{
+                width: "100%",
+                background: "transparent",
+                border: "none",
+                borderBottom: "1px solid var(--saddle-brown)",
+                padding: "16px 0",
+                fontFamily: "var(--font-mono)",
+                fontSize: "14px",
+                color: "var(--saddle-brown)",
+                outline: "none",
+                resize: "none",
+                textTransform: "uppercase",
+                letterSpacing: "0.1em"
+              }}
+            />
+          </div>
+          
+          <button 
             style={{
-              display: "inline-flex",
-              alignItems: "center",
-              gap: 12,
-              padding: "18px 44px",
-              borderRadius: 20,
-              fontSize: 17,
+              alignSelf: "center",
+              marginTop: "20px",
+              padding: "16px 48px",
+              backgroundColor: "transparent",
+              color: "var(--saddle-brown)",
+              border: "1px solid var(--copper)",
+              fontFamily: "var(--font-display)",
+              fontSize: "14px",
               fontWeight: 700,
-              color: "#fff",
-              background: "linear-gradient(135deg, var(--royal), var(--sky))",
-              boxShadow: "0 12px 40px rgba(26,110,245,0.45)",
-              fontFamily: "var(--font-body)",
-              marginBottom: 56,
+              textTransform: "uppercase",
+              letterSpacing: "0.2em",
               cursor: "pointer",
+              transition: "all 0.3s ease",
+              boxShadow: "0 0 0 rgba(200, 117, 51, 0)"
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = "scale(1.05)";
+              e.currentTarget.style.boxShadow = "0 0 20px rgba(200, 117, 51, 0.4)";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = "scale(1)";
+              e.currentTarget.style.boxShadow = "0 0 0 rgba(200, 117, 51, 0)";
             }}
           >
-            Send a message
-            <span style={{ fontSize: 20 }}>→</span>
-          </motion.a>
-        </RevealSection>
+            Send Message
+          </button>
+        </form>
 
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: 16 }}>
+        {/* Social Links */}
+        <div style={{ display: "flex", justifyContent: "center", gap: "24px", flexWrap: "wrap" }}>
           {links.map((link, i) => (
-            <RevealSection key={link.label} delay={0.3 + i * 0.1}>
-              <TiltCard
-                className="glass"
-                style={{
-                  borderRadius: 20,
-                  padding: "24px 20px",
-                  textAlign: "center",
-                  display: "block",
-                  textDecoration: "none",
-                }}
-              >
-                <a
-                  href={link.href}
-                  target={link.href.startsWith("http") ? "_blank" : undefined}
-                  rel="noopener noreferrer"
-                  style={{ textDecoration: "none", color: "inherit" }}
-                >
-                  <div style={{
-                    width: 44,
-                    height: 44,
-                    borderRadius: 12,
-                    background: "rgba(26,110,245,0.15)",
-                    border: "1px solid rgba(26,110,245,0.25)",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    fontSize: 15,
-                    fontWeight: 700,
-                    color: "var(--royal)",
-                    margin: "0 auto 14px",
-                  }}>
-                    {link.icon}
-                  </div>
-                  <div style={{ fontSize: 11, fontWeight: 600, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 6 }}>
-                    {link.label}
-                  </div>
-                  <div style={{ fontSize: 12, color: "var(--text-secondary)", fontWeight: 500, wordBreak: "break-all" }}>
-                    {link.value}
-                  </div>
-                </a>
-              </TiltCard>
-            </RevealSection>
+            <a 
+              key={i}
+              href={link.href}
+              target={link.href.startsWith("http") ? "_blank" : undefined}
+              rel="noopener noreferrer"
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                gap: "8px",
+                textDecoration: "none",
+                transform: hoveredLink === i ? "translateY(-4px)" : "translateY(0)",
+                transition: "transform 0.3s ease"
+              }}
+              onMouseEnter={() => setHoveredLink(i)}
+              onMouseLeave={() => setHoveredLink(null)}
+            >
+              <div style={{
+                fontFamily: "var(--font-mono)",
+                fontSize: "11px",
+                color: hoveredLink === i ? "var(--copper)" : "var(--saddle-brown)",
+                textTransform: "uppercase",
+                letterSpacing: "0.1em",
+                transition: "color 0.3s ease"
+              }}>
+                {link.label}
+              </div>
+            </a>
           ))}
         </div>
-
-        <RevealSection delay={0.8}>
-          <div style={{ marginTop: 72, paddingTop: 32, borderTop: "1px solid rgba(255,255,255,0.15)" }}>
-            <p style={{ fontSize: 13, color: "var(--text-muted)" }}>
-              © 2025 Sasidharan K. · Product & Industrial Designer · Virudhanagar, Tamil Nadu
-            </p>
-          </div>
-        </RevealSection>
       </div>
     </section>
   );

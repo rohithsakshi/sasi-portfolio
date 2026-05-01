@@ -54,7 +54,7 @@ export default function Thesis() {
               width: 320,
               height: 320,
               borderRadius: "50%",
-              background: "var(--royal)",
+              background: "var(--copper)",
               opacity: 0.05,
               filter: "blur(60px)",
             }} />
@@ -77,7 +77,7 @@ export default function Thesis() {
                   fontWeight: 600,
                   letterSpacing: "0.15em",
                   textTransform: "uppercase",
-                  color: "var(--royal)",
+                  color: "var(--copper)",
                   display: "block",
                   marginBottom: 16,
                 }}>PID 431 · Lovely Professional University</span>
@@ -96,7 +96,7 @@ export default function Thesis() {
                     fontWeight: 600,
                     background: "rgba(26,110,245,0.15)",
                     border: "1px solid rgba(26,110,245,0.3)",
-                    color: "var(--royal)",
+                    color: "var(--copper)",
                   }}>
                     Supervisor: Prof. Raghuraman M.
                   </span>
@@ -125,7 +125,7 @@ export default function Thesis() {
                       fontSize: 32,
                       fontWeight: 800,
                       fontFamily: "var(--font-display)",
-                      background: "linear-gradient(135deg, var(--royal), var(--sky))",
+                      background: "var(--copper)",
                       WebkitBackgroundClip: "text",
                       WebkitTextFillColor: "transparent",
                       backgroundClip: "text",
@@ -154,7 +154,7 @@ export default function Thesis() {
                   width: 36,
                   height: 36,
                   borderRadius: 10,
-                  background: "linear-gradient(135deg, var(--royal), var(--sky))",
+                  background: "var(--copper)",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",

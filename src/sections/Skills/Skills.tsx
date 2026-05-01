@@ -1,133 +1,217 @@
 "use client";
-import { useRef } from "react";
-import { motion, useInView } from "framer-motion";
-import { TiltCard } from "../../components/Visuals/TiltCard";
-import { RevealSection } from "../../components/RevealSection/RevealSection";
 
-const skills = [
-  { category: "Graphic Design", items: ["Logo Design", "Poster Design", "Packaging", "Branding"], icon: "✦", color: "var(--royal)" },
-  { category: "CAD & Modeling", items: ["Analytical Drawing", "3D Modeling", "Technical Sketching", "Orthographic Views"], icon: "⬡", color: "var(--sky)" },
-  { category: "Prototyping", items: ["Material Selection", "Fabrication", "Machining Tools", "Physical Prototyping"], icon: "◈", color: "var(--slate)" },
-  { category: "Design Process", items: ["Design Thinking", "User Research", "Ergonomics", "Anthropometry"], icon: "◎", color: "var(--royal)" },
+import React, { useEffect, useRef, useState } from "react";
+
+const skillsList = [
+  "CAD Design",
+  "Prototyping",
+  "Design Thinking",
+  "Fabrication",
+  "User Research",
+  "Branding",
 ];
 
-const tools = [
-  { name: "Adobe Illustrator", level: 85 },
-  { name: "Photoshop", level: 80 },
-  { name: "Fusion 360", level: 70 },
-  { name: "Figma", level: 75 },
-  { name: "Sketching", level: 90 },
-  { name: "User Research", level: 88 },
+const summaryText = [
+  "I am an industrial designer who believes that form follows function.",
+  "With a deep focus on manufacturing constraints, ergonomics, and aesthetic purity,",
+  "I engineer solutions that elevate everyday interactions.",
+  "My process is grounded in physical prototyping and critical analysis."
 ];
-
-function SkillBar({ name, level, delay }: { name: string; level: number; delay: number }) {
-  const ref = useRef(null);
-  const inView = useInView(ref, { once: true });
-  return (
-    <div ref={ref} style={{ marginBottom: 20 }}>
-      <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8 }}>
-        <span style={{ fontSize: 13, fontWeight: 500, color: "var(--text-secondary)" }}>{name}</span>
-        <span style={{ fontSize: 12, color: "var(--royal)", fontWeight: 600 }}>{level}%</span>
-      </div>
-      <div style={{
-        height: 6,
-        borderRadius: 3,
-        background: "rgba(255,255,255,0.2)",
-        overflow: "hidden",
-      }}>
-        <motion.div
-          initial={{ width: 0 }}
-          animate={inView ? { width: `${level}%` } : {}}
-          transition={{ duration: 1.2, delay, ease: [0.16, 1, 0.3, 1] }}
-          style={{
-            height: "100%",
-            borderRadius: 3,
-            background: "linear-gradient(90deg, var(--royal), var(--sky))",
-            boxShadow: "0 0 12px rgba(26,110,245,0.4)",
-          }}
-        />
-      </div>
-    </div>
-  );
-}
 
 export default function Skills() {
-  return (
-    <section id="skills" style={{ padding: "120px 24px", position: "relative", zIndex: 10 }}>
-      <div style={{ maxWidth: 1100, margin: "0 auto" }}>
-        <RevealSection>
-          <div style={{ textAlign: "center", marginBottom: 72 }}>
-            <span className="section-tag">Expertise</span>
-            <h2 style={{ fontSize: "clamp(36px, 6vw, 56px)", fontWeight: 800, letterSpacing: -1, marginTop: 12, color: "var(--text-primary)" }}>
-              Skills & Capabilities
-            </h2>
-          </div>
-        </RevealSection>
+  const containerRef = useRef<HTMLElement>(null);
+  const orbitRef = useRef<HTMLDivElement>(null);
+  const textRefs = useRef<(HTMLParagraphElement | null)[]>([]);
 
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: 20, marginBottom: 60 }}>
-          {skills.map((skill, i) => (
-            <RevealSection key={skill.category} delay={i * 0.05}>
-              <TiltCard
-                className="glass"
-                style={{ borderRadius: 24, padding: "32px 28px", height: "100%" }}
-              >
-                <div style={{
-                  width: 48,
-                  height: 48,
-                  borderRadius: 14,
-                  background: `rgba(26,110,245,0.12)`,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  fontSize: 22,
-                  color: skill.color,
-                  marginBottom: 20,
-                  border: `1px solid rgba(26,110,245,0.2)`,
-                }}>
-                  {skill.icon}
-                </div>
-                <h3 style={{ fontSize: 16, fontWeight: 700, color: "var(--text-primary)", marginBottom: 16, fontFamily: "var(--font-display)" }}>
-                  {skill.category}
-                </h3>
-                <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-                  {skill.items.map((item) => (
-                    <span
-                      key={item}
-                      style={{
-                        fontSize: 12,
-                        fontWeight: 500,
-                        padding: "5px 12px",
-                        borderRadius: 8,
-                        background: "rgba(255,255,255,0.2)",
-                        border: "1px solid rgba(255,255,255,0.3)",
-                        color: "var(--text-secondary)",
-                      }}
-                    >
-                      {item}
-                    </span>
-                  ))}
-                </div>
-              </TiltCard>
-            </RevealSection>
-          ))}
+  useEffect(() => {
+    let lastScrollY = window.scrollY;
+    let rotation = 0;
+
+    const handleScroll = () => {
+      if (!containerRef.current || !orbitRef.current) return;
+
+      const currentScrollY = window.scrollY;
+      const scrollDelta = currentScrollY - lastScrollY;
+      
+      // Calculate how far down the section is
+      const rect = containerRef.current.getBoundingClientRect();
+      const inView = rect.top < window.innerHeight && rect.bottom > 0;
+
+      if (inView) {
+        // Orbit speed tied to scroll depth
+        rotation += scrollDelta * 0.1;
+        orbitRef.current.style.transform = `translate(-50%, -50%) rotate(${rotation}deg)`;
+        
+        // Counter-rotate the skill nodes so text stays upright
+        const nodes = orbitRef.current.querySelectorAll('.skillNode');
+        nodes.forEach((node) => {
+          (node as HTMLElement).style.transform = `translate(-50%, -50%) rotate(${-rotation}deg)`;
+        });
+
+        // Sequential fade for summary text based on scroll position within section
+        const sectionProgress = Math.max(0, Math.min(1, (window.innerHeight - rect.top) / rect.height));
+        
+        textRefs.current.forEach((el, index) => {
+          if (!el) return;
+          const triggerPoint = 0.3 + (index * 0.1);
+          if (sectionProgress > triggerPoint) {
+            el.style.opacity = "1";
+            el.style.transform = "translateY(0)";
+          } else {
+            el.style.opacity = "0";
+            el.style.transform = "translateY(20px)";
+          }
+        });
+      }
+
+      lastScrollY = currentScrollY;
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    handleScroll(); // Init
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
+
+  return (
+    <section 
+      id="skills" 
+      ref={containerRef}
+      style={{ 
+        position: "relative", 
+        padding: "150px 24px", 
+        backgroundColor: "var(--wheat)",
+        minHeight: "120vh",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        overflow: "hidden"
+      }}
+    >
+      {/* ORBITAL REVEAL LAYOUT */}
+      <div 
+        style={{
+          position: "relative",
+          width: "300px",
+          height: "300px",
+          margin: "0 auto 100px auto",
+        }}
+      >
+        {/* Center Badge */}
+        <div
+          style={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            width: "120px",
+            height: "120px",
+            backgroundColor: "var(--wheat)",
+            border: "2px solid var(--saddle-brown)",
+            borderRadius: "50%",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 10,
+            boxShadow: "0 10px 30px rgba(139, 69, 19, 0.15)"
+          }}
+        >
+          <span style={{ 
+            fontFamily: "var(--font-display)", 
+            fontSize: "42px", 
+            fontWeight: 700, 
+            color: "var(--saddle-brown)",
+            letterSpacing: "-0.05em"
+          }}>
+            SK
+          </span>
         </div>
 
-        {/* Proficiency bars */}
-        <RevealSection>
-          <TiltCard
-            className="glass-strong"
-            style={{ borderRadius: 28, padding: "48px 48px" }}
+        {/* Orbiting Ring */}
+        <div
+          ref={orbitRef}
+          style={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            width: "100%",
+            height: "100%",
+            borderRadius: "50%",
+            border: "1px dashed rgba(139, 69, 19, 0.3)",
+          }}
+        >
+          {skillsList.map((skill, index) => {
+            const angle = (index / skillsList.length) * 360;
+            const radius = 150; // Half of width/height
+            // Calculate initial positions
+            const rad = (angle * Math.PI) / 180;
+            const x = Math.round(Math.cos(rad) * radius + radius);
+            const y = Math.round(Math.sin(rad) * radius + radius);
+
+            return (
+              <div
+                key={skill}
+                className="skillNode"
+                style={{
+                  position: "absolute",
+                  left: `${x}px`,
+                  top: `${y}px`,
+                  transform: "translate(-50%, -50%)",
+                  backgroundColor: "var(--cream)",
+                  border: "1px solid var(--saddle-brown)",
+                  padding: "10px 16px",
+                  borderRadius: "100px",
+                  whiteSpace: "nowrap",
+                  fontFamily: "var(--font-main)",
+                  fontSize: "12px",
+                  fontWeight: 600,
+                  color: "var(--saddle-brown)",
+                  textTransform: "uppercase",
+                  letterSpacing: "0.1em",
+                  boxShadow: "0 4px 12px rgba(139, 69, 19, 0.1)",
+                  transition: "border-color 0.3s ease, box-shadow 0.3s ease",
+                  cursor: "default"
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.borderColor = "var(--copper)";
+                  e.currentTarget.style.boxShadow = "0 0 15px rgba(200, 117, 51, 0.4)";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.borderColor = "var(--saddle-brown)";
+                  e.currentTarget.style.boxShadow = "0 4px 12px rgba(139, 69, 19, 0.1)";
+                }}
+              >
+                {skill}
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* SEQUENTIAL TEXT SUMMARY */}
+      <div style={{ maxWidth: "800px", textAlign: "center", marginTop: "40px" }}>
+        {summaryText.map((text, i) => (
+          <p
+            key={i}
+            ref={(el) => { textRefs.current[i] = el; }}
+            style={{
+              fontFamily: "var(--font-main)",
+              fontSize: "clamp(18px, 3vw, 28px)",
+              fontWeight: 400,
+              lineHeight: 1.6,
+              color: "var(--saddle-brown)",
+              opacity: 0,
+              transform: "translateY(20px)",
+              transition: "opacity 0.8s ease, transform 0.8s ease",
+              marginBottom: "10px",
+            }}
           >
-            <h3 style={{ fontSize: 20, fontWeight: 700, color: "var(--text-primary)", marginBottom: 32, fontFamily: "var(--font-display)" }}>
-              Proficiency Levels
-            </h3>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: "0 60px" }}>
-              {tools.map((tool, i) => (
-                <SkillBar key={tool.name} name={tool.name} level={tool.level} delay={0.1 * i} />
-              ))}
-            </div>
-          </TiltCard>
-        </RevealSection>
+            {text}
+          </p>
+        ))}
       </div>
     </section>
   );

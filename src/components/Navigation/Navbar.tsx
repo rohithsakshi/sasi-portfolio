@@ -1,16 +1,14 @@
 "use client";
 import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { useCursor } from "../Cursor/CursorProvider";
+import { motion } from "framer-motion";
 
 const links = ["About", "Skills", "Projects", "Thesis", "Contact"];
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
-  const { setCursorVariant } = useCursor();
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 40);
+    const onScroll = () => setScrolled(window.scrollY > 10);
     window.addEventListener("scroll", onScroll);
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
@@ -31,79 +29,81 @@ export default function Navbar() {
       transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
       style={{
         position: "fixed",
-        top: 20,
-        left: "50%",
-        translateX: "-50%",
+        top: 0,
+        left: 0,
+        right: 0,
         zIndex: 1000,
-        width: "calc(100% - 48px)",
-        maxWidth: 900,
+        height: "72px",
+        background: "var(--wheat, #F5DEB3)",
+        boxShadow: scrolled ? "0 2px 8px rgba(0,0,0,0.05)" : "none",
+        transition: "all 0.4s ease",
+        display: "flex",
+        justifyContent: "center",
+      }}
+    >
+      <div style={{
+        width: "100%",
+        maxWidth: "1400px",
+        height: "100%",
         display: "flex",
         alignItems: "center",
         justifyContent: "space-between",
-        padding: "14px 28px",
-        borderRadius: 20,
-        background: scrolled ? "rgba(255,255,255,0.18)" : "rgba(255,255,255,0.1)",
-        backdropFilter: "blur(24px) saturate(180%)",
-        WebkitBackdropFilter: "blur(24px) saturate(180%)",
-        border: "1px solid rgba(255,255,255,0.3)",
-        boxShadow: scrolled ? "0 8px 40px rgba(26,110,245,0.15)" : "0 4px 20px rgba(0,0,0,0.08)",
-        transition: "all 0.4s ease",
-      }}
-    >
-      <motion.span
-        style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 18, color: "var(--white)", letterSpacing: -0.5, cursor: "pointer" }}
-        whileHover={{ scale: 1.05 }}
-        onClick={() => scrollTo("About")}
-        onMouseEnter={() => setCursorVariant("hover")}
-        onMouseLeave={() => setCursorVariant("default")}
-      >
-        SK<span style={{ color: "var(--royal)" }}>.</span>
-      </motion.span>
-
-      <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-        {links.map((link) => (
-          <motion.button
-            key={link}
-            onClick={() => scrollTo(link)}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            onMouseEnter={() => setCursorVariant("hover")}
-            onMouseLeave={() => setCursorVariant("default")}
-            style={{
-              padding: "8px 16px",
-              borderRadius: 12,
-              fontSize: 13,
-              fontWeight: 500,
-              color: "var(--light-blue)",
-              background: "transparent",
-              border: "none",
-              cursor: "pointer",
-              fontFamily: "var(--font-main)",
-              transition: "all 0.2s",
-            }}
-          >
-            {link}
-          </motion.button>
-        ))}
-        <motion.a
-          href="mailto:Sasiharsha6602@gmail.com"
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          onMouseEnter={() => setCursorVariant("hover")}
-          onMouseLeave={() => setCursorVariant("default")}
-          style={{
-            padding: "9px 20px",
-            borderRadius: 12,
-            fontSize: 13,
-            fontWeight: 600,
-            color: "#fff",
-            background: "linear-gradient(135deg, var(--royal), var(--sky))",
-            boxShadow: "0 4px 16px rgba(26,110,245,0.4)",
-            fontFamily: "var(--font-main)",
+        padding: "0 24px",
+      }}>
+        <span
+          style={{ 
+            fontFamily: "var(--font-display)", 
+            fontWeight: 800, 
+            fontSize: "24px", 
+            color: "var(--saddle-brown, #8B4513)", 
+            letterSpacing: "-0.5px" 
           }}
         >
-          Hire Me
-        </motion.a>
+          SK.
+        </span>
+
+        <div style={{ display: "flex", gap: "32px", alignItems: "center" }}>
+          {links.map((link) => (
+            <motion.button
+              key={link}
+              onClick={() => scrollTo(link)}
+              whileHover={{ color: "var(--copper, #C87533)" }}
+              style={{
+                fontSize: "14px",
+                fontWeight: 400,
+                color: "var(--saddle-brown, #8B4513)",
+                background: "transparent",
+                border: "none",
+                cursor: "pointer",
+                fontFamily: "var(--font-main)",
+                transition: "color 0.3s ease-out",
+                position: "relative",
+              }}
+            >
+              {link}
+            </motion.button>
+          ))}
+          <motion.a
+            href="mailto:Sasiharsha6602@gmail.com"
+            whileHover={{ scale: 1.05, boxShadow: "0 0 12px rgba(200,117,51,0.4)" }}
+            whileTap={{ scale: 0.95 }}
+            style={{
+              padding: "12px 24px",
+              borderRadius: "4px",
+              fontSize: "14px",
+              fontWeight: "bold",
+              color: "var(--saddle-brown, #8B4513)",
+              background: "var(--cream, #FFFBF0)",
+              border: "2px solid var(--copper, #C87533)",
+              fontFamily: "var(--font-main)",
+              textDecoration: "none",
+              transition: "all 0.3s ease-out",
+              cursor: "pointer",
+            }}
+          >
+            Hire Me
+          </motion.a>
+        </div>
       </div>
     </motion.nav>
   );

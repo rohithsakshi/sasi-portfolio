@@ -24,7 +24,7 @@ export const ClientLayout = ({ children }: { children: ReactNode }) => {
           left: 0,
           right: 0,
           height: "2px",
-          background: "linear-gradient(90deg, var(--royal), var(--sky))",
+          background: "var(--copper)",
           transformOrigin: "0%",
           zIndex: 10001,
           scaleX,

@@ -1,30 +1,22 @@
 import type { Metadata } from "next";
-import { Barlow, Barlow_Condensed, Playfair_Display } from "next/font/google";
+import { Inter, Poppins } from "next/font/google";
 import "./globals.css";
 import { ClientLayout } from "../src/components/Layout/ClientLayout";
 
-const barlow = Barlow({
+const inter = Inter({
   subsets: ["latin"],
-  weight: ["300", "400", "500", "600"],
-  variable: "--font-barlow",
+  variable: "--font-inter",
 });
 
-const barlowCondensed = Barlow_Condensed({
+const poppins = Poppins({
   subsets: ["latin"],
-  weight: ["700", "800", "900"],
-  variable: "--font-barlow-condensed",
-});
-
-const playfair = Playfair_Display({
-  subsets: ["latin"],
-  weight: ["400"],
-  style: ["italic"],
-  variable: "--font-playfair",
+  weight: ["400", "600", "700"],
+  variable: "--font-poppins",
 });
 
 export const metadata: Metadata = {
   title: "SASIDHARAN K. | Product & Industrial Designer",
-  description: "Premium Portfolio of Sasidharan K., a Product & Industrial Designer from India.",
+  description: "Premium 3D Portfolio of Sasidharan K., a Product & Industrial Designer.",
 };
 
 export default function RootLayout({
@@ -33,7 +25,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${barlow.variable} ${barlowCondensed.variable} ${playfair.variable}`}>
+    <html lang="en" className={`${inter.variable} ${poppins.variable}`}>
       <body>
         <ClientLayout>
           {children}

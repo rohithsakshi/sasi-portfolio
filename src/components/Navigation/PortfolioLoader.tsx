@@ -18,26 +18,21 @@ const PARTS = [
 
 export const PortfolioLoader = () => {
   const [isVisible, setIsVisible] = useState(true);
-  const [phase, setPhase] = useState<number>(0);
+  const [phase, setPhase] = useState<number>(1); // Starts at phase 1
 
   useEffect(() => {
-    const hasVisited = sessionStorage.getItem("hasVisitedPortfolio_v2");
-    if (hasVisited) {
-      setIsVisible(false);
-      return;
-    }
-
     // Phase Timings
-    const t1 = setTimeout(() => setPhase(1), 800);   // Snap into place & render frame
-    const t2 = setTimeout(() => setPhase(2), 1600);  // Assembly complete pause
-    const t3 = setTimeout(() => setPhase(3), 2000);  // Text reveal
-    const t4 = setTimeout(() => {
+    // Phase 1 (0 - 0.8s): Float in (handled by initial -> animate)
+    const t1 = setTimeout(() => setPhase(2), 800);   // Phase 2: Snap into place
+    const t2 = setTimeout(() => setPhase(3), 1600);  // Phase 3: Pause
+    const t3 = setTimeout(() => setPhase(4), 2000);  // Phase 4: Text reveal
+    const t4 = setTimeout(() => setPhase(5), 2600);  // Idle loop
+    const t5 = setTimeout(() => {
       setIsVisible(false);
-      sessionStorage.setItem("hasVisitedPortfolio_v2", "true");
-    }, 4500); // Wait longer to see the idle state
+    }, 4500); // Exit after letting it idle
 
     return () => {
-      [t1, t2, t3, t4].forEach(clearTimeout);
+      [t1, t2, t3, t4, t5].forEach(clearTimeout);
     };
   }, []);
 
@@ -46,14 +41,14 @@ export const PortfolioLoader = () => {
       {isVisible && (
         <motion.div
           exit={{ 
-            opacity: 0,
-            transition: { duration: 1, ease: [0.76, 0, 0.24, 1] }
+            y: "-100%",
+            transition: { duration: 0.8, ease: [0.76, 0, 0.24, 1] }
           }}
           style={{
             position: "fixed",
             inset: 0,
             zIndex: 10000,
-            background: "#0a0a0a",
+            background: "#2A1810", // Dark background (near-black / very dark brown)
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
@@ -62,10 +57,10 @@ export const PortfolioLoader = () => {
         >
           {/* ASSEMBLY CONTAINER */}
           <motion.div
-            animate={phase >= 2 ? {
+            animate={phase >= 5 ? {
               y: [0, -4, 0],
               transition: { duration: 4, repeat: Infinity, ease: "easeInOut" }
-            } : {}}
+            } : { y: 0 }}
             style={{ 
               position: "relative", 
               width: "200px", 
@@ -91,10 +86,10 @@ export const PortfolioLoader = () => {
               <motion.rect
                 x="0" y="0" width="100" height="160"
                 fill="none"
-                stroke="#666"
+                stroke="#F5DEB3" // Wheat
                 strokeWidth="0.75"
                 initial={{ pathLength: 0, opacity: 0 }}
-                animate={phase >= 1 ? { pathLength: 1, opacity: 1 } : {}}
+                animate={phase >= 2 ? { pathLength: 1, opacity: 1 } : {}}
                 transition={{ duration: 0.8, ease: "easeOut" }}
               />
               
@@ -102,20 +97,20 @@ export const PortfolioLoader = () => {
               <motion.path
                 d="M10,10 L10,150 M50,10 L50,150 M90,10 L90,150"
                 fill="none"
-                stroke="#444"
+                stroke="#F5DEB3" // Wheat
                 strokeWidth="0.5"
                 initial={{ pathLength: 0 }}
-                animate={phase >= 1 ? { pathLength: 1 } : {}}
+                animate={phase >= 2 ? { pathLength: 1 } : {}}
                 transition={{ duration: 0.8, delay: 0.2 }}
               />
 
               {/* Horizontal Divider */}
               <motion.line
                 x1="10" y1="80" x2="90" y2="80"
-                stroke="#444"
+                stroke="#F5DEB3" // Wheat
                 strokeWidth="0.5"
                 initial={{ scaleX: 0 }}
-                animate={phase >= 1 ? { scaleX: 1 } : {}}
+                animate={phase >= 2 ? { scaleX: 1 } : {}}
                 transition={{ duration: 0.6, delay: 0.4 }}
               />
 
@@ -128,10 +123,10 @@ export const PortfolioLoader = () => {
                   key={i}
                   x={pos.x} y={pos.y} width="4" height="4"
                   fill="none"
-                  stroke="#555"
+                  stroke="#F5DEB3" // Wheat
                   strokeWidth="0.5"
                   initial={{ opacity: 0 }}
-                  animate={phase >= 1 ? { opacity: 1 } : {}}
+                  animate={phase >= 2 ? { opacity: 1 } : {}}
                   transition={{ delay: 0.8 + i * 0.05 }}
                 />
               ))}
@@ -148,7 +143,7 @@ export const PortfolioLoader = () => {
                   rotate: part.start.r, 
                   opacity: 0 
                 }}
-                animate={phase === 0 ? {
+                animate={phase === 1 ? {
                   x: [part.start.x, part.start.x + 5, part.start.x],
                   y: [part.start.y, part.start.y - 8, part.start.y],
                   rotate: [part.start.r, part.start.r + 3, part.start.r],
@@ -172,7 +167,7 @@ export const PortfolioLoader = () => {
                   <path
                     d={part.path}
                     fill="none"
-                    stroke="#888"
+                    stroke="#F5DEB3" // Wheat
                     strokeWidth="1.5"
                   />
                 </svg>
@@ -184,7 +179,7 @@ export const PortfolioLoader = () => {
           <div style={{ height: "80px", marginTop: "10px", display: "flex", flexDirection: "column", alignItems: "center" }}>
             <motion.div
               initial={{ opacity: 0, y: 20 }}
-              animate={phase >= 3 ? { opacity: 1, y: 0 } : {}}
+              animate={phase >= 4 ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.6, ease: "easeOut" }}
               style={{ textAlign: "center" }}
             >
@@ -192,7 +187,7 @@ export const PortfolioLoader = () => {
                 fontSize: "1.4rem", 
                 letterSpacing: "0.5em", 
                 fontWeight: 300, 
-                color: "#e0e0e0",
+                color: "#F5DEB3", // Wheat
                 margin: 0,
                 textTransform: "uppercase"
               }}>
@@ -200,12 +195,12 @@ export const PortfolioLoader = () => {
               </h1>
               <motion.div
                 initial={{ opacity: 0 }}
-                animate={phase >= 3 ? { opacity: 1 } : {}}
+                animate={phase >= 4 ? { opacity: 1 } : {}}
                 transition={{ delay: 0.3, duration: 0.8 }}
                 style={{ 
                   fontSize: "0.65rem", 
                   letterSpacing: "0.4em", 
-                  color: "#777", 
+                  color: "#8B4513", // Saddle Brown
                   marginTop: "12px",
                   textTransform: "uppercase",
                   fontWeight: 400

@@ -1,249 +1,271 @@
 "use client";
 
 import React, { useEffect, useRef } from "react";
-import Image from "next/image";
-import { motion, Variants } from "framer-motion";
+import * as THREE from "three";
 import styles from "./Hero.module.scss";
-import { useCursor } from "../../components/Cursor/CursorProvider";
 
 const Hero = () => {
   const containerRef = useRef<HTMLDivElement>(null);
-  
-  const charVariants: Variants = {
-    hidden: { y: 60, opacity: 0, rotateX: 90 },
-    visible: { 
-      y: 0, 
-      opacity: 1, 
-      rotateX: 0,
-      transition: { duration: 0.8, ease: [0.215, 0.61, 0.355, 1] as any }
-    }
-  };
+  const canvasContainerRef = useRef<HTMLDivElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
 
-  const portraitVariants: Variants = {
-    initial: { opacity: 0, x: 100 },
-    animate: { 
-      opacity: 1, 
-      x: 0,
-      transition: { duration: 1.2, delay: 1, ease: [0.16, 1, 0.3, 1] as any }
-    }
-  };
+  useEffect(() => {
+    if (!containerRef.current || !canvasContainerRef.current || !canvasRef.current) return;
 
-  const nameString = "Sasidharan";
-  const { setCursorVariant } = useCursor();
+    // --- THREE.JS SETUP ---
+    const scene = new THREE.Scene();
+    
+    // Camera setup - Increased FOV and depth
+    const camera = new THREE.PerspectiveCamera(
+      50,
+      canvasContainerRef.current.clientWidth / canvasContainerRef.current.clientHeight,
+      0.1,
+      1000
+    );
+    camera.position.set(0, 1.2, 7.5);
+    camera.lookAt(0, 0, 0);
+
+    const renderer = new THREE.WebGLRenderer({
+      canvas: canvasRef.current,
+      alpha: true,
+      antialias: true,
+    });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setSize(canvasContainerRef.current.clientWidth, canvasContainerRef.current.clientHeight);
+    
+    // Shadows
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
+    // --- LIGHTS ---
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
+    scene.add(ambientLight);
+
+    const directionalLight = new THREE.DirectionalLight(0xfffbf0, 1.5); 
+    directionalLight.position.set(5, 5, 5);
+    directionalLight.castShadow = true;
+    directionalLight.shadow.mapSize.width = 2048;
+    directionalLight.shadow.mapSize.height = 2048;
+    directionalLight.shadow.bias = -0.0001;
+    scene.add(directionalLight);
+
+    const rimLight = new THREE.DirectionalLight(0xffffff, 0.8);
+    rimLight.position.set(-5, 2, -5);
+    scene.add(rimLight);
+
+    // --- GROUND PLANE (FOR SHADOWS) ---
+    const planeGeo = new THREE.PlaneGeometry(100, 100);
+    const planeMat = new THREE.ShadowMaterial({ opacity: 0.1 });
+    const plane = new THREE.Mesh(planeGeo, planeMat);
+    plane.rotation.x = -Math.PI / 2;
+    plane.position.y = -2.7; // Just below the model
+    plane.receiveShadow = true;
+    scene.add(plane);
+
+    // --- 3D EXPANDABLE EXTENSION BOX GEOMETRY ---
+    const group = new THREE.Group();
+    group.scale.set(1.8, 1.8, 1.8);
+    // Position elegantly under the text, spanning towards the center
+    group.position.set(-0.8, -1.6, 0);
+
+    // Materials
+    const saddleBrownMaterial = new THREE.MeshStandardMaterial({
+      color: 0x8b4513, // Saddle Brown
+      roughness: 0.8,
+      metalness: 0.2,
+    });
+
+    const copperMaterial = new THREE.MeshStandardMaterial({
+      color: 0xc87533, // Copper
+      metalness: 0.4,
+      roughness: 0.5,
+    });
+
+    const holeMaterial = new THREE.MeshStandardMaterial({
+      color: 0x2a1810, // Dark Brown for holes
+      roughness: 0.9,
+    });
+
+    const parts = {
+      leftShell: new THREE.Group(),
+      rightShell: new THREE.Group(),
+      core: new THREE.Mesh(new THREE.BoxGeometry(0.6, 0.9, 0.9), saddleBrownMaterial),
+      accordions: [] as THREE.Mesh[],
+    };
+    parts.core.castShadow = true;
+    parts.core.receiveShadow = true;
+
+    // Build Left Shell
+    const leftShellMesh = new THREE.Mesh(new THREE.BoxGeometry(0.3, 1.0, 1.0), saddleBrownMaterial);
+    leftShellMesh.castShadow = true;
+    leftShellMesh.receiveShadow = true;
+    parts.leftShell.add(leftShellMesh);
+
+    // Build Right Shell
+    const rightShellMesh = new THREE.Mesh(new THREE.BoxGeometry(0.3, 1.0, 1.0), saddleBrownMaterial);
+    rightShellMesh.castShadow = true;
+    rightShellMesh.receiveShadow = true;
+    parts.rightShell.add(rightShellMesh);
+
+    // Accordion segments (5 segments)
+    const numSegments = 5;
+    for (let i = 0; i < numSegments; i++) {
+      const segment = new THREE.Mesh(new THREE.BoxGeometry(0.15, 0.85, 0.85), saddleBrownMaterial);
+      segment.castShadow = true;
+      segment.receiveShadow = true;
+      parts.accordions.push(segment);
+      group.add(segment);
+      
+      // Add a socket face (copper) to every segment
+      const socket = new THREE.Mesh(new THREE.CylinderGeometry(0.15, 0.15, 0.05, 16), copperMaterial);
+      socket.rotation.x = Math.PI / 2;
+      socket.position.set(0, 0, 0.45); // Front face
+      socket.castShadow = true;
+      socket.receiveShadow = true;
+      
+      // Add 3 socket holes (dark cylinders) inside the socket
+      const holeGeo = new THREE.CylinderGeometry(0.03, 0.03, 0.06, 8);
+      
+      const hole1 = new THREE.Mesh(holeGeo, holeMaterial);
+      hole1.position.set(0, 0, 0.05);
+      
+      const hole2 = new THREE.Mesh(holeGeo, holeMaterial);
+      hole2.position.set(-0.06, 0, -0.05);
+      
+      const hole3 = new THREE.Mesh(holeGeo, holeMaterial);
+      hole3.position.set(0.06, 0, -0.05);
+
+      socket.add(hole1);
+      socket.add(hole2);
+      socket.add(hole3);
+      
+      segment.add(socket);
+    }
+
+    group.add(parts.leftShell);
+    group.add(parts.rightShell);
+    group.add(parts.core);
+
+    // Tilt slightly to see isometric view
+    group.rotation.set(0, 0, 0);
+
+    scene.add(group);
+
+    // Handle Resize
+    const onResize = () => {
+      if (!canvasContainerRef.current) return;
+      const width = canvasContainerRef.current.clientWidth;
+      const height = canvasContainerRef.current.clientHeight;
+
+      renderer.setSize(width, height);
+      camera.aspect = width / height;
+      
+      if (window.innerWidth < 768) {
+        group.scale.set(1.3, 1.3, 1.3);
+        group.position.set(0, -0.2, -0.3);
+      } else if (window.innerWidth < 1024) {
+        group.scale.set(1.7, 1.7, 1.7);
+        group.position.set(-0.8, -0.3, -0.3);
+      } else {
+        group.scale.set(2.2, 2.2, 2.2);
+        
+        // Define soft boundary so it never enters text zone
+        const TEXT_SAFE_ZONE = -2.2;
+        let targetX = -1.4;
+        if (targetX < TEXT_SAFE_ZONE) targetX = TEXT_SAFE_ZONE;
+        
+        group.position.set(targetX, -0.5, -0.3);
+      }
+
+      camera.updateProjectionMatrix();
+    };
+    
+    window.addEventListener("resize", onResize);
+    onResize();
+
+    let lastTime = performance.now();
+    let accumulatedTime = 0;
+
+    // Render loop
+    const animate = (timestamp: number) => {
+      requestAnimationFrame(animate);
+
+      const delta = (timestamp - lastTime) / 1000;
+      lastTime = timestamp;
+      accumulatedTime += delta;
+
+      // Sine-wave animation timing (0 to 1)
+      const t = (Math.sin(accumulatedTime * 0.8) + 1) / 2;
+      
+      const isMobile = window.innerWidth < 768;
+      const MAX_OFFSET = isMobile ? 0.5 : 1.0;
+      const explodeOffset = t * MAX_OFFSET;
+
+      // Asymmetric Expansion
+      const leftTarget = -explodeOffset * 0.8;
+      const rightTarget = explodeOffset * 1.4;
+
+      // Clamping limits
+      const LEFT_LIMIT = -3.2;
+      const RIGHT_LIMIT = 1.8;
+
+      parts.leftShell.position.x = Math.max(leftTarget, LEFT_LIMIT);
+      parts.rightShell.position.x = Math.min(rightTarget, RIGHT_LIMIT);
+      
+      // Core sits centrally between the two shells
+      const leftBound = parts.leftShell.position.x;
+      const rightBound = parts.rightShell.position.x;
+      const spread = rightBound - leftBound;
+
+      parts.core.position.x = leftBound + spread * 0.5;
+
+      // Evenly distribute accordions
+      parts.accordions.forEach((seg, i) => {
+        seg.position.x = leftBound + (spread / (numSegments + 1)) * (i + 1);
+      });
+
+      renderer.render(scene, camera);
+    };
+
+    requestAnimationFrame((t) => {
+      lastTime = t;
+      animate(t);
+    });
+
+    return () => {
+      window.removeEventListener("resize", onResize);
+      renderer.dispose();
+      scene.clear();
+    };
+  }, []);
 
   return (
-    <section className={styles.hero} ref={containerRef} id="about">
-      {/* LAYER 1: BACKGROUND */}
-      <div className={styles.bgLayers}>
-        <div className={styles.noiseOverlay} />
+    <section className={styles.heroSection} ref={containerRef}>
+      {/* 3D Layer is now full width/height and acts as the background */}
+      <div className={styles.canvasContainer} ref={canvasContainerRef}>
+        <canvas ref={canvasRef} className={styles.webglCanvas} />
       </div>
 
-      {/* LAYER 2: BACKGROUND TYPOGRAPHY */}
-      <motion.div 
-        className={styles.bgTypography}
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 1, delay: 0.3 }}
-      >
-        SASI
-      </motion.div>
-
-      {/* LAYER 3: FOREGROUND CONTENT */}
-      <div className={styles.foreground}>
-        <div className={styles.leftColumn}>
-          {/* Role Badge */}
-          <motion.div 
-            className={styles.roleBadge}
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 1, delay: 0.8 }}
-          >
-            <span className={styles.badgeLine} />
-            <span className={styles.badgeText}>INDUSTRIAL & PRODUCT DESIGNER</span>
-          </motion.div>
-
-          {/* Giant Name Split Characters */}
-          <motion.h1 
-            className={styles.giantName}
-            initial="hidden"
-            animate="visible"
-            variants={{
-              visible: { transition: { staggerChildren: 0.04, delayChildren: 0.8 } }
-            }}
-            style={{ perspective: 1000 }}
-          >
-            <div className={styles.nameLine} style={{ display: "flex", flexWrap: "wrap" }}>
-              {nameString.split("").map((char, i) => (
-                <motion.span 
-                  key={i} 
-                  variants={charVariants}
-                  style={{ display: "inline-block" }}
-                >
-                  {char}
-                </motion.span>
-              ))}
-            </div>
-            <div className={styles.nameLine} style={{ display: "flex" }}>
-              {"K.".split("").map((char, i) => (
-                <motion.span 
-                  key={i} 
-                  variants={charVariants}
-                  style={{ display: "inline-block" }}
-                >
-                  {char}
-                </motion.span>
-              ))}
-            </div>
-          </motion.h1>
-
-          {/* Tagline */}
-          <motion.p 
-            className={styles.tagline}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1, delay: 1.4 }}
-          >
-            <span className={styles.highlightText}>I transform ideas into functional and visually strong design experiences.</span><br />
-            My goal is to create products that are both <span className={styles.serif}>beautiful and purposeful.</span>
-          </motion.p>
-
-          {/* CTA Row */}
-          <motion.div 
-            className={styles.ctaRow}
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.8, delay: 1.6 }}
-          >
-            <button 
-              className={styles.primaryBtn}
-              onMouseEnter={() => setCursorVariant("hover")}
-              onMouseLeave={() => setCursorVariant("default")}
-            >
-              View Work &rarr;
-            </button>
-            <button 
-              className={styles.ghostBtn}
-              onMouseEnter={() => setCursorVariant("hover")}
-              onMouseLeave={() => setCursorVariant("default")}
-            >
-              Download CV
-            </button>
-          </motion.div>
-
-          {/* Stat Pills */}
-          <motion.div 
-            className={styles.statPills}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 1.5 }}
-          >
-            <div className={styles.pill}><span>5+</span> Projects</div>
-            <div className={styles.pill}><span>01</span> Patent</div>
-            <div className={styles.pill}><span>B.Des</span> LPU</div>
-          </motion.div>
+      {/* Z-indexed content layers */}
+      <div className={styles.leftPane}>
+        <div className={styles.textContainer}>
+          <h1 className={styles.title}>SASIDHARAN K.</h1>
+          <p className={styles.subtitle}>Product Designer</p>
         </div>
-
-        {/* Right Side - Portrait */}
-        <motion.div 
-          className={styles.portraitContainer}
-          variants={portraitVariants}
-          initial="initial"
-          animate="animate"
-        >
-          <div className={styles.imageWrapper}>
-            <Image 
-              src="/sasi.png" 
-              alt="Sasidharan K." 
-              fill 
-              priority 
-              className={styles.portrait}
-            />
-            <div className={styles.gradientMaskLeft} />
-            <div className={styles.gradientMaskBottom} />
-          </div>
-        </motion.div>
       </div>
 
-      {/* FLOATING GLASS CARDS */}
-      <motion.div 
-        className={`${styles.glassCard} ${styles.patentCard}`}
-        initial={{ opacity: 0, x: 50 }}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{ duration: 1.2, delay: 1.8 }}
-        onMouseEnter={() => setCursorVariant("hover")}
-        onMouseLeave={() => setCursorVariant("default")}
-      >
-        <div className={styles.cardEyebrow}>PATENT HOLDER</div>
-        <div className={styles.cardTitle}>FlexiBox</div>
-        <div className={styles.cardSubtitle}>Expandable Extension Box System</div>
-        <div className={styles.dotGrid}>
-          {[...Array(12)].map((_, i) => (
-            <div key={i} className={`${styles.dot} ${i < 5 ? styles.active : ""}`} />
-          ))}
+      <div className={styles.rightPane}>
+        <div className={styles.imageContainer}>
+          <img 
+            src="/sasi.png" 
+            alt="Sasidharan K." 
+            className={styles.heroImage} 
+          />
         </div>
-      </motion.div>
-
-      <motion.div 
-        className={`${styles.glassCard} ${styles.educationCard}`}
-        initial={{ opacity: 0, y: 50 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 1.2, delay: 1.9 }}
-        onMouseEnter={() => setCursorVariant("hover")}
-        onMouseLeave={() => setCursorVariant("default")}
-      >
-        <div className={styles.cardEyebrow}>EDUCATION</div>
-        <div className={styles.cardTitle}>Bachelor of Design — Product & Industrial</div>
-        <div className={styles.cardSubtitle}>Lovely Professional University</div>
-        <div className={styles.progressBar}>
-          <div className={styles.progressFill} />
-        </div>
-      </motion.div>
-
-      {/* SIDEBARS */}
-      <motion.div 
-        className={styles.leftSidebar}
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 2.0 }}
-      >
-        <div className={styles.verticalLine} />
-        <div className={styles.socialLinks}>
-          <a href="#">LinkedIn</a>
-          <a href="#">Behance</a>
-          <a href="#">Dribbble</a>
-        </div>
-      </motion.div>
-
-      <motion.div 
-        className={styles.rightSidebar}
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 2.2 }}
-      >
-        <div className={styles.scrollIndicator}>
-          <div className={styles.scrollDot} />
-          <div className={styles.scrollLine} />
-        </div>
-        <div className={styles.scrollText}>SCROLL</div>
-      </motion.div>
-
-      {/* EXPERIENCE BADGE */}
-      <motion.div 
-        className={styles.expBadge}
-        initial={{ opacity: 0, scale: 0.5 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 1, delay: 2.4 }}
-      >
-        <div className={styles.badgeCircle}>
-          <div className={styles.badgeInner}>
-            <span className={styles.num}>01</span>
-            <span className={styles.label}>Patent</span>
-          </div>
-        </div>
-        <div className={styles.badgeLabel}>Researcher & Innovator</div>
-      </motion.div>
+      </div>
     </section>
   );
 };
 
 export default Hero;
+

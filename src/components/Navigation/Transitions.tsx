@@ -32,7 +32,7 @@ export const PageTransition = () => {
             left: 0,
             width: "100%",
             height: "100%",
-            background: "linear-gradient(135deg, var(--royal), var(--sky))",
+            background: "var(--copper)",
             zIndex: 10000,
             display: "flex",
             alignItems: "center",
@@ -67,7 +67,7 @@ export const ScrollProgress = () => {
         left: 0,
         right: 0,
         height: "2px",
-        background: "linear-gradient(90deg, var(--royal), var(--sky))",
+        background: "var(--copper)",
         transformOrigin: "0%",
         zIndex: 10001,
         scaleX: 0, // Will be controlled by useScroll in layout or here

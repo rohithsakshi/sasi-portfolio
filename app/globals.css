@@ -1,27 +1,13 @@
 :root {
-  --background: #0D0F14;
-  --white: #f5f8ff;
-  --light-blue: #c8d8e8;
-  --slate: #607080;
-  --royal: #1a6ef5;
-  --sky: #1a9ef5;
+  --wheat: #F5DEB3;
+  --saddle-brown: #8B4513;
+  --cream: #FFFBF0;
+  --dark-brown: #2A1810;
+  --copper: #C87533;
 
-  --font-main: var(--font-barlow), sans-serif;
-  --font-display: var(--font-barlow-condensed), sans-serif;
-  --font-serif: var(--font-playfair), serif;
-}
-
-@keyframes glow-pulse {
-  0%, 100% {
-    box-shadow: 0 0 20px rgba(26, 110, 245, 0.1);
-  }
-  50% {
-    box-shadow: 0 0 40px rgba(26, 110, 245, 0.4);
-  }
-}
-
-.glass-strong {
-  animation: glow-pulse 3s ease-in-out infinite;
+  --font-main: var(--font-inter), sans-serif;
+  --font-display: var(--font-poppins), sans-serif;
+  --font-mono: monospace;
 }
 
 * {
@@ -34,8 +20,8 @@ html,
 body {
   max-width: 100vw;
   overflow-x: hidden;
-  background: var(--background);
-  color: var(--soft-white);
+  background: var(--wheat);
+  color: var(--saddle-brown);
   font-family: var(--font-main);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -63,18 +49,17 @@ ul {
 
 /* Custom scrollbar for premium feel */
 ::-webkit-scrollbar {
-  width: 4px;
+  width: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--background);
+  background: var(--cream);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--charcoal);
-  border-radius: 10px;
+  background: var(--saddle-brown);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--muted-steel-blue);
+  background: var(--copper);
 }

@@ -1,9 +1,7 @@
 "use client";
-import { useRef, useState } from "react";
-import { motion, useInView, AnimatePresence } from "framer-motion";
-import { TiltCard } from "../../components/Visuals/TiltCard";
-import { RevealSection } from "../../components/RevealSection/RevealSection";
-import { useCursor } from "../../components/Cursor/CursorProvider";
+
+import React, { useEffect, useRef } from "react";
+import * as THREE from "three";
 
 const projects = [
   {
@@ -12,11 +10,9 @@ const projects = [
     domain: "Domestic Sector",
     type: "Team Project",
     year: "Jul–Nov '22",
-    description: "Redesigned a static air cooler into a fully portable unit. Conducted user surveys and interviews to identify pain points. Applied ergonomics and anthropometry principles in prototyping.",
-    tags: ["Ergonomics", "User Research", "Prototyping", "CAD"],
-    color: "var(--royal)",
-    icon: "❄",
-    highlights: ["80+ user surveys", "Ergonomic prototype", "Anthropometry applied"],
+    description: "Redesigned a static air cooler into a fully portable unit with ergonomic features.",
+    tags: ["Ergonomics", "User Research", "Prototyping"],
+    modelType: "box", // Mockup type for Three.js
   },
   {
     id: 2,
@@ -24,11 +20,9 @@ const projects = [
     domain: "Domestic Sector",
     type: "Individual Project",
     year: "Sept '22",
-    description: "Detailed competitive analysis of existing products. User interviews and surveys to identify pain points. Innovated a new design concept and brought it to prototype stage.",
-    tags: ["Product Design", "User Interviews", "Fabrication", "Innovation"],
-    color: "var(--sky)",
-    icon: "👟",
-    highlights: ["Competitive analysis", "Individual prototype", "User-validated"],
+    description: "Innovated a new design concept for domestic shoe storage with physical prototyping.",
+    tags: ["Product Design", "Fabrication", "Innovation"],
+    modelType: "cylinder",
   },
   {
     id: 3,
@@ -36,142 +30,256 @@ const projects = [
     domain: "Consumer Electronics",
     type: "Thesis Project",
     year: "2023",
-    description: "Research-driven redesign of extension boxes. Surveyed 80 participants across diverse backgrounds. Created expandable, foldable, portable design with multiple pin configurations.",
-    tags: ["Thesis", "User Research", "Smart Design", "Portability"],
-    color: "#607080",
-    icon: "⚡",
-    highlights: ["80 participants", "Foldable design", "3-stage expandable"],
+    description: "Expandable, foldable, portable extension box design with multiple pin configurations.",
+    tags: ["Thesis", "Smart Design", "Portability"],
+    modelType: "prism",
   },
 ];
 
+// Helper component for individual 3D scenes
+const ProjectCanvas = ({ type }: { type: string }) => {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  useEffect(() => {
+    if (!canvasRef.current) return;
+    const canvas = canvasRef.current;
+    
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(45, canvas.clientWidth / canvas.clientHeight, 0.1, 100);
+    camera.position.z = 5;
+
+    const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setSize(canvas.clientWidth, canvas.clientHeight);
+
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
+    scene.add(ambientLight);
+    
+    const dirLight = new THREE.DirectionalLight(0xc87533, 1.5); // Copper light
+    dirLight.position.set(2, 2, 2);
+    scene.add(dirLight);
+
+    const material = new THREE.MeshStandardMaterial({
+      color: 0xc87533, // Copper base
+      roughness: 0.3,
+      metalness: 0.8,
+    });
+
+    let geometry;
+    if (type === "box") geometry = new THREE.BoxGeometry(1.5, 2, 1);
+    else if (type === "cylinder") geometry = new THREE.CylinderGeometry(0.8, 0.8, 2, 32);
+    else geometry = new THREE.OctahedronGeometry(1.2);
+
+    const mesh = new THREE.Mesh(geometry, material);
+    scene.add(mesh);
+
+    let animationFrameId: number;
+    let isVisible = false;
+
+    // Intersection observer to only render when in view
+    const observer = new IntersectionObserver(([entry]) => {
+      isVisible = entry.isIntersecting;
+    }, { threshold: 0.1 });
+    observer.observe(canvas);
+
+    const animate = () => {
+      animationFrameId = requestAnimationFrame(animate);
+      if (isVisible) {
+        mesh.rotation.x += 0.005;
+        mesh.rotation.y += 0.01;
+        renderer.render(scene, camera);
+      }
+    };
+    animate();
+
+    const handleResize = () => {
+      if (!canvasRef.current) return;
+      camera.aspect = canvasRef.current.clientWidth / canvasRef.current.clientHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(canvasRef.current.clientWidth, canvasRef.current.clientHeight);
+    };
+    window.addEventListener("resize", handleResize);
+
+    return () => {
+      cancelAnimationFrame(animationFrameId);
+      observer.disconnect();
+      window.removeEventListener("resize", handleResize);
+      renderer.dispose();
+      scene.clear();
+    };
+  }, [type]);
+
+  return <canvas ref={canvasRef} style={{ width: "100%", height: "100%", display: "block" }} />;
+};
+
 export default function Projects() {
-  const [active, setActive] = useState<number | null>(null);
-  const { setCursorVariant } = useCursor();
+  const containerRef = useRef<HTMLElement>(null);
+  const cardsRef = useRef<(HTMLDivElement | null)[]>([]);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (!containerRef.current) return;
+      
+      cardsRef.current.forEach((card) => {
+        if (!card) return;
+        const rect = card.getBoundingClientRect();
+        const cardCenter = rect.top + rect.height / 2;
+        const windowCenter = window.innerHeight / 2;
+        
+        // Calculate distance from center of screen
+        const distanceFromCenter = cardCenter - windowCenter;
+        
+        // Trigger flip when close to center
+        if (Math.abs(distanceFromCenter) < window.innerHeight * 0.3) {
+          card.style.transform = "rotateX(180deg)";
+        } else {
+          card.style.transform = "rotateX(0deg)";
+        }
+      });
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    handleScroll();
+
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   return (
-    <section id="projects" style={{ padding: "120px 24px", position: "relative", zIndex: 10 }}>
-      <div style={{ maxWidth: 1100, margin: "0 auto" }}>
-        <RevealSection>
-          <div style={{ textAlign: "center", marginBottom: 72 }}>
-            <span className="section-tag">Work</span>
-            <h2 style={{ fontSize: "clamp(36px, 6vw, 56px)", fontWeight: 800, letterSpacing: -1, marginTop: 12, color: "var(--text-primary)" }}>
-              Featured Projects
-            </h2>
-          </div>
-        </RevealSection>
+    <section 
+      id="projects" 
+      ref={containerRef}
+      style={{ 
+        padding: "150px 24px", 
+        backgroundColor: "var(--wheat)",
+        position: "relative",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center"
+      }}
+    >
+      <div style={{ textAlign: "center", marginBottom: "80px" }}>
+        <h2 style={{ 
+          fontFamily: "var(--font-display)", 
+          fontSize: "clamp(36px, 6vw, 56px)", 
+          fontWeight: 700, 
+          color: "var(--saddle-brown)",
+          textTransform: "uppercase"
+        }}>
+          Featured Work
+        </h2>
+      </div>
 
-        <div style={{ display: "grid", gap: 24 }}>
-          {projects.map((project, i) => (
-            <RevealSection key={project.id} delay={i * 0.1}>
-              <TiltCard
-                className="glass"
-                onClick={() => setActive(active === project.id ? null : project.id)}
-                style={{
-                  borderRadius: 28,
-                  padding: "36px 40px",
-                  cursor: "pointer",
-                  position: "relative",
-                  overflow: "hidden",
-                  borderLeft: `3px solid ${project.color}`,
-                }}
-              >
-                {/* Glow accent */}
-                <div style={{
-                  position: "absolute",
-                  top: -40,
-                  right: -40,
-                  width: 160,
-                  height: 160,
-                  borderRadius: "50%",
-                  background: project.color,
-                  opacity: 0.06,
-                  filter: "blur(40px)",
-                  pointerEvents: "none",
-                }} />
+      <div style={{ 
+        display: "flex", 
+        flexDirection: "column", 
+        gap: "100px",
+        width: "100%",
+        maxWidth: "900px",
+        perspective: "1500px" // Perspective applied to parent for 3D flip
+      }}>
+        {projects.map((project, i) => (
+          <div 
+            key={project.id}
+            style={{
+              position: "relative",
+              width: "100%",
+              height: "400px",
+              transformStyle: "preserve-3d",
+              transition: "transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1)",
+            }}
+            ref={(el) => { cardsRef.current[i] = el; }}
+          >
+            {/* FRONT FACE */}
+            <div style={{
+              position: "absolute",
+              inset: 0,
+              backfaceVisibility: "hidden",
+              backgroundColor: "var(--saddle-brown)",
+              borderRadius: "16px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              boxShadow: "0 20px 40px rgba(42, 24, 16, 0.2)",
+              border: "1px solid var(--copper)"
+            }}>
+              <h3 style={{ 
+                fontFamily: "var(--font-display)", 
+                fontSize: "32px", 
+                color: "var(--wheat)",
+                textAlign: "center",
+                padding: "20px"
+              }}>
+                {project.title}
+              </h3>
+            </div>
 
-                <div style={{ display: "flex", alignItems: "flex-start", gap: 24, flexWrap: "wrap" }}>
-                  <div style={{
-                    width: 64,
-                    height: 64,
-                    borderRadius: 18,
-                    background: `${project.color}22`,
-                    border: `1px solid ${project.color}44`,
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    fontSize: 26,
-                    flexShrink: 0,
-                  }}>
-                    {project.icon}
-                  </div>
+            {/* BACK FACE */}
+            <div style={{
+              position: "absolute",
+              inset: 0,
+              backfaceVisibility: "hidden",
+              backgroundColor: "var(--cream)",
+              borderRadius: "16px",
+              transform: "rotateX(180deg)",
+              boxShadow: "0 20px 40px rgba(42, 24, 16, 0.1)",
+              border: "1px solid var(--saddle-brown)",
+              display: "flex",
+              overflow: "hidden"
+            }}>
+              {/* 3D Canvas Side */}
+              <div style={{ flex: 1, position: "relative", borderRight: "1px solid rgba(139, 69, 19, 0.1)" }}>
+                <ProjectCanvas type={project.modelType} />
+              </div>
 
-                  <div style={{ flex: 1, minWidth: 200 }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap", marginBottom: 8 }}>
-                      <h3 style={{ fontSize: 22, fontWeight: 700, color: "var(--text-primary)", fontFamily: "var(--font-display)" }}>
-                        {project.title}
-                      </h3>
-                      <span style={{
-                        fontSize: 11,
-                        fontWeight: 600,
-                        padding: "4px 12px",
-                        borderRadius: 8,
-                        background: `${project.color}20`,
-                        color: project.color,
-                        border: `1px solid ${project.color}40`,
-                        letterSpacing: "0.05em",
-                      }}>
-                        {project.type}
-                      </span>
-                    </div>
-                    <p style={{ fontSize: 13, color: "var(--text-muted)", marginBottom: 16, fontWeight: 500 }}>
-                      {project.domain} · {project.year}
-                    </p>
-                    <p style={{ fontSize: 15, lineHeight: 1.7, color: "var(--text-secondary)", marginBottom: 20 }}>
-                      {project.description}
-                    </p>
-                    <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-                      {project.tags.map((tag) => (
-                        <span
-                          key={tag}
-                          style={{
-                            fontSize: 12,
-                            fontWeight: 500,
-                            padding: "5px 12px",
-                            borderRadius: 8,
-                            background: "rgba(255,255,255,0.2)",
-                            border: "1px solid rgba(255,255,255,0.3)",
-                            color: "var(--text-secondary)",
-                          }}
-                        >
-                          {tag}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div style={{ display: "flex", flexDirection: "column", gap: 12, flexShrink: 0 }}>
-                    {project.highlights.map((h) => (
-                      <div
-                        key={h}
-                        style={{
-                          display: "flex",
-                          alignItems: "center",
-                          gap: 8,
-                          fontSize: 13,
-                          color: "var(--text-muted)",
-                          fontWeight: 500,
-                        }}
-                      >
-                        <span style={{ color: project.color, fontWeight: 700 }}>✓</span>
-                        {h}
-                      </div>
-                    ))}
-                  </div>
+              {/* Info Side */}
+              <div style={{ flex: 1, padding: "40px", display: "flex", flexDirection: "column", justifyContent: "center" }}>
+                <div style={{ 
+                  fontFamily: "var(--font-mono)", 
+                  fontSize: "12px", 
+                  color: "var(--copper)",
+                  marginBottom: "8px",
+                  textTransform: "uppercase"
+                }}>
+                  {project.domain} // {project.year}
                 </div>
-              </TiltCard>
-            </RevealSection>
-          ))}
-        </div>
+                <h3 style={{ 
+                  fontFamily: "var(--font-display)", 
+                  fontSize: "24px", 
+                  fontWeight: 700,
+                  color: "var(--saddle-brown)",
+                  marginBottom: "16px"
+                }}>
+                  {project.title}
+                </h3>
+                <p style={{
+                  fontFamily: "var(--font-main)",
+                  fontSize: "15px",
+                  color: "var(--saddle-brown)",
+                  opacity: 0.9,
+                  lineHeight: 1.6,
+                  marginBottom: "24px"
+                }}>
+                  {project.description}
+                </p>
+                <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+                  {project.tags.map(tag => (
+                    <span key={tag} style={{
+                      fontSize: "11px",
+                      padding: "6px 12px",
+                      borderRadius: "100px",
+                      border: "1px solid var(--copper)",
+                      color: "var(--copper)",
+                      textTransform: "uppercase",
+                      letterSpacing: "0.05em"
+                    }}>
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        ))}
       </div>
     </section>
   );

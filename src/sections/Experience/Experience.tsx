@@ -1,201 +1,274 @@
 "use client";
-import { useRef } from "react";
-import { motion } from "framer-motion";
-import { RevealSection } from "../../components/RevealSection/RevealSection";
-import { TiltCard } from "../../components/Visuals/TiltCard";
-import { useCursor } from "../../components/Cursor/CursorProvider";
 
-const timeline = [
+import React, { useEffect, useRef } from "react";
+import * as THREE from "three";
+
+const milestones = [
   {
-    type: "internship",
-    title: "Graphic Design Intern",
+    title: "Best Intern of the Week × 2",
     org: "Mystic Couture Pvt. Ltd.",
-    location: "Coimbatore, IN",
-    period: "May '22 – July '22",
-    points: [
-      "Designed posters for advertisement, invitations, and branding campaigns",
-      "Collaborated with technical and event management teams on design briefs",
-      "Achieved Best Intern of the Week for two consecutive weeks",
-    ],
-    award: "Best Intern × 2",
-    color: "var(--royal)",
+    date: "July '22",
+    description: "Awarded for exceptional graphic design and rapid prototyping iterations.",
+    geometry: "trophy",
   },
   {
-    type: "education",
-    title: "B.Des in Product & Industrial Design",
-    org: "Lovely Professional University",
-    location: "Phagwara, IN",
-    period: "Aug '20 – Present",
-    points: [
-      "Specialization in Product & Industrial Design",
-      "Coursework in ergonomics, anthropometry, material science, and CAD",
-      "Active participation in International Product Design Conference",
-    ],
-    award: "CGPA 5.35",
-    color: "var(--sky)",
+    title: "1st Position",
+    org: "Poster Design Competition",
+    date: "March '22",
+    description: "Won first place among 150+ participants for visual impact.",
+    geometry: "badge",
   },
   {
-    type: "education",
-    title: "Higher Secondary Education",
-    org: "SFS Metric Higher Secondary School",
-    location: "Virudhanagar, Tamil Nadu",
-    period: "Jun '19 – Mar '20",
-    points: ["Completed higher secondary with 82% aggregate"],
-    award: "82%",
-    color: "var(--slate)",
+    title: "Poster Award",
+    org: "BLOOD Organization",
+    date: "July '22",
+    description: "Special recognition for healthcare awareness poster design.",
+    geometry: "certificate",
   },
 ];
 
-const achievements = [
-  { title: "1st Position", event: "Poster Design Competition", org: "Mystic Couture", year: "Mar '22" },
-  { title: "Poster Award", event: "Poster Design for BLOOD Organization", org: "BLOOD Org", year: "Jul '22" },
-  { title: "Volunteer", event: "International Conference on Product Design", org: "LPU", year: "Nov '22" },
-];
+// Reusable geometries
+const createTrophyGeo = () => {
+  const geo = new THREE.CylinderGeometry(0.8, 0.4, 1.5, 32);
+  return geo;
+};
+
+const createBadgeGeo = () => {
+  const geo = new THREE.OctahedronGeometry(1, 0);
+  return geo;
+};
+
+const createCertGeo = () => {
+  const geo = new THREE.BoxGeometry(1.4, 1.8, 0.2);
+  return geo;
+};
 
 export default function Experience() {
-  const { setCursorVariant } = useCursor();
+  const containerRef = useRef<HTMLElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const itemsRef = useRef<(HTMLDivElement | null)[]>([]);
+
+  useEffect(() => {
+    if (!containerRef.current || !canvasRef.current) return;
+    
+    const scene = new THREE.Scene();
+    
+    // Set up camera
+    const camera = new THREE.PerspectiveCamera(45, canvasRef.current.clientWidth / canvasRef.current.clientHeight, 0.1, 100);
+    camera.position.z = 8;
+    // Move camera to left side to align with the timeline dots
+    camera.position.x = -2.5; 
+
+    const renderer = new THREE.WebGLRenderer({ canvas: canvasRef.current, alpha: true, antialias: true });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setSize(canvasRef.current.clientWidth, canvasRef.current.clientHeight);
+
+    // Lights
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
+    scene.add(ambientLight);
+    const dirLight = new THREE.DirectionalLight(0xc87533, 1.5); // Copper shine
+    dirLight.position.set(2, 2, 5);
+    scene.add(dirLight);
+
+    // Copper Material
+    const copperMat = new THREE.MeshStandardMaterial({
+      color: 0xc87533,
+      metalness: 0.9,
+      roughness: 0.2,
+    });
+
+    // Create meshes
+    const meshes: THREE.Mesh[] = [];
+    milestones.forEach((m, index) => {
+      let geo;
+      if (m.geometry === "trophy") geo = createTrophyGeo();
+      else if (m.geometry === "badge") geo = createBadgeGeo();
+      else geo = createCertGeo();
+
+      const mesh = new THREE.Mesh(geo, copperMat);
+      // Position them vertically spaced
+      // Base positions will be updated dynamically in scroll loop based on DOM elements
+      scene.add(mesh);
+      meshes.push(mesh);
+    });
+
+    let animationFrameId: number;
+
+    const animate = () => {
+      animationFrameId = requestAnimationFrame(animate);
+      
+      if (!containerRef.current) return;
+      
+      const rect = containerRef.current.getBoundingClientRect();
+      const inView = rect.top < window.innerHeight && rect.bottom > 0;
+
+      if (inView) {
+        itemsRef.current.forEach((item, i) => {
+          if (!item) return;
+          const itemRect = item.getBoundingClientRect();
+          
+          // Normalized position relative to center of screen (0 is center, >0 is below, <0 is above)
+          const centerDist = (itemRect.top + itemRect.height / 2) - window.innerHeight / 2;
+          
+          const mesh = meshes[i];
+          
+          // Trigger rise effect when approaching center
+          if (centerDist < window.innerHeight * 0.4) {
+            // Rising
+            const targetY = -centerDist * 0.01;
+            mesh.position.y += (targetY - mesh.position.y) * 0.1;
+            mesh.scale.setScalar(1);
+          } else {
+            // Hidden below
+            mesh.position.y = -5;
+            mesh.scale.setScalar(0.01); // Shrink to hide
+          }
+
+          // Constant rotation
+          mesh.rotation.y += 0.01;
+          mesh.rotation.x = Math.sin(Date.now() * 0.001 + i) * 0.2;
+        });
+        
+        renderer.render(scene, camera);
+      }
+    };
+    
+    animate();
+
+    const handleResize = () => {
+      if (!canvasRef.current) return;
+      camera.aspect = canvasRef.current.clientWidth / canvasRef.current.clientHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(canvasRef.current.clientWidth, canvasRef.current.clientHeight);
+    };
+    window.addEventListener("resize", handleResize);
+
+    return () => {
+      cancelAnimationFrame(animationFrameId);
+      window.removeEventListener("resize", handleResize);
+      renderer.dispose();
+      scene.clear();
+    };
+  }, []);
 
   return (
-    <section id="experience" style={{ padding: "120px 24px", position: "relative", zIndex: 10 }}>
-      <div style={{ maxWidth: 1100, margin: "0 auto" }}>
-        <RevealSection>
-          <div style={{ textAlign: "center", marginBottom: 72 }}>
-            <span className="section-tag">Journey</span>
-            <h2 style={{ fontSize: "clamp(36px, 6vw, 56px)", fontWeight: 800, letterSpacing: -1, marginTop: 12, color: "var(--text-primary)" }}>
-              Experience & Education
-            </h2>
-          </div>
-        </RevealSection>
+    <section 
+      id="experience" 
+      ref={containerRef}
+      style={{ 
+        position: "relative",
+        padding: "150px 24px", 
+        backgroundColor: "var(--wheat)",
+      }}
+    >
+      <div style={{ textAlign: "center", marginBottom: "80px" }}>
+        <h2 style={{ 
+          fontFamily: "var(--font-display)", 
+          fontSize: "clamp(36px, 6vw, 56px)", 
+          fontWeight: 700, 
+          color: "var(--saddle-brown)",
+          textTransform: "uppercase"
+        }}>
+          Achievements
+        </h2>
+      </div>
 
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 340px", gap: 32, alignItems: "start" }}>
-          {/* Timeline */}
-          <div style={{ position: "relative" }}>
-            <div style={{
-              position: "absolute",
-              left: 20,
-              top: 0,
-              bottom: 0,
-              width: 1,
-              background: "rgba(255,255,255,0.2)",
-            }} />
-            {timeline.map((item, i) => (
-              <RevealSection key={item.title} delay={i * 0.1}>
-                <div style={{ display: "flex", gap: 28, marginBottom: 32, position: "relative" }}>
-                  {/* Dot */}
-                  <div style={{
-                    width: 40,
-                    height: 40,
-                    borderRadius: "50%",
-                    background: item.color,
-                    flexShrink: 0,
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    zIndex: 1,
-                    boxShadow: `0 0 20px ${item.color}60`,
-                    fontSize: 14,
-                  }}>
-                    {item.type === "internship" ? "💼" : "🎓"}
-                  </div>
+      <div style={{ position: "relative", maxWidth: "800px", margin: "0 auto", display: "flex" }}>
+        
+        {/* Full-height canvas for 3D objects */}
+        <canvas 
+          ref={canvasRef} 
+          style={{ 
+            position: "absolute", 
+            top: 0, 
+            left: 0, 
+            width: "100%", 
+            height: "100%", 
+            pointerEvents: "none",
+            zIndex: 5 
+          }} 
+        />
 
-                  <TiltCard
-                    className="glass"
-                    style={{ borderRadius: 24, padding: "28px 32px", flex: 1 }}
-                  >
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 12, flexWrap: "wrap", gap: 8 }}>
-                      <div>
-                        <h3 style={{ fontSize: 18, fontWeight: 700, color: "var(--text-primary)", fontFamily: "var(--font-display)" }}>{item.title}</h3>
-                        <p style={{ fontSize: 14, color: "var(--text-muted)", marginTop: 4 }}>{item.org} · {item.location}</p>
-                      </div>
-                      <div style={{ textAlign: "right" }}>
-                        <span style={{
-                          fontSize: 12,
-                          fontWeight: 600,
-                          padding: "4px 12px",
-                          borderRadius: 8,
-                          background: `${item.color}22`,
-                          color: item.color,
-                          border: `1px solid ${item.color}44`,
-                          display: "block",
-                          marginBottom: 4,
-                        }}>
-                          {item.award}
-                        </span>
-                        <span style={{ fontSize: 12, color: "var(--text-muted)" }}>{item.period}</span>
-                      </div>
-                    </div>
-                    <ul style={{ paddingLeft: 16 }}>
-                      {item.points.map((p) => (
-                        <li key={p} style={{ fontSize: 14, lineHeight: 1.7, color: "var(--text-secondary)", marginBottom: 4 }}>{p}</li>
-                      ))}
-                    </ul>
-                  </TiltCard>
+        {/* Vertical Line */}
+        <div style={{
+          position: "absolute",
+          left: "20px",
+          top: 0,
+          bottom: 0,
+          width: "2px",
+          backgroundColor: "var(--saddle-brown)",
+          zIndex: 1
+        }} />
+
+        <div style={{ width: "100%", paddingLeft: "60px", display: "flex", flexDirection: "column", gap: "100px" }}>
+          {milestones.map((m, i) => (
+            <div 
+              key={i} 
+              ref={(el) => { itemsRef.current[i] = el; }}
+              style={{ position: "relative", zIndex: 10 }}
+            >
+              {/* Timeline Dot */}
+              <div style={{
+                position: "absolute",
+                left: "-49px",
+                top: "24px",
+                width: "20px",
+                height: "20px",
+                borderRadius: "50%",
+                backgroundColor: "var(--wheat)",
+                border: "4px solid var(--saddle-brown)",
+                zIndex: 2
+              }} />
+
+              {/* Text Block */}
+              <div style={{
+                backgroundColor: "var(--cream)",
+                border: "1px solid rgba(139, 69, 19, 0.2)",
+                borderRadius: "16px",
+                padding: "32px",
+                boxShadow: "0 10px 30px rgba(42, 24, 16, 0.05)"
+              }}>
+                <div style={{ 
+                  fontFamily: "var(--font-mono)", 
+                  fontSize: "12px", 
+                  color: "var(--copper)",
+                  marginBottom: "8px",
+                  textTransform: "uppercase",
+                  fontWeight: 600
+                }}>
+                  {m.date}
                 </div>
-              </RevealSection>
-            ))}
-          </div>
-
-          {/* Achievements */}
-          <div>
-            <RevealSection>
-              <h3 style={{ fontSize: 18, fontWeight: 700, color: "var(--text-primary)", fontFamily: "var(--font-display)", marginBottom: 20 }}>
-                Achievements
-              </h3>
-            </RevealSection>
-            {achievements.map((a, i) => (
-              <RevealSection key={a.title} delay={0.4 + i * 0.1}>
-                <TiltCard
-                  className="glass"
-                  style={{ borderRadius: 20, padding: "24px", marginBottom: 16 }}
-                >
-                  <div style={{
-                    fontSize: 20,
-                    fontWeight: 800,
-                    fontFamily: "var(--font-display)",
-                    background: "linear-gradient(135deg, var(--royal), var(--sky))",
-                    WebkitBackgroundClip: "text",
-                    WebkitTextFillColor: "transparent",
-                    backgroundClip: "text",
-                    marginBottom: 8,
-                  }}>
-                    {a.title}
-                  </div>
-                  <div style={{ fontSize: 13, fontWeight: 600, color: "var(--text-secondary)", marginBottom: 4 }}>{a.event}</div>
-                  <div style={{ fontSize: 12, color: "var(--text-muted)" }}>{a.org} · {a.year}</div>
-                </TiltCard>
-              </RevealSection>
-            ))}
-
-            {/* Certifications */}
-            <RevealSection delay={0.8}>
-              <TiltCard
-                className="glass"
-                style={{ borderRadius: 20, padding: "24px", marginTop: 8 }}
-              >
-                <h4 style={{ fontSize: 14, fontWeight: 700, color: "var(--text-primary)", fontFamily: "var(--font-display)", marginBottom: 16 }}>
-                  Certifications
-                </h4>
-                {[
-                  { name: "Poster Design", org: "Udemy", year: "Jul '21" },
-                  { name: "Healthcare Academics", org: "BLOOD Camp", year: "Dec '21" },
-                ].map((cert) => (
-                  <div key={cert.name} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
-                    <div>
-                      <div style={{ fontSize: 13, fontWeight: 600, color: "var(--text-secondary)" }}>{cert.name}</div>
-                      <div style={{ fontSize: 11, color: "var(--text-muted)" }}>{cert.org}</div>
-                    </div>
-                    <span style={{
-                      fontSize: 11,
-                      padding: "3px 10px",
-                      borderRadius: 6,
-                      background: "rgba(255,255,255,0.2)",
-                      color: "var(--text-muted)",
-                    }}>{cert.year}</span>
-                  </div>
-                ))}
-              </TiltCard>
-            </RevealSection>
-          </div>
+                <h3 style={{ 
+                  fontFamily: "var(--font-display)", 
+                  fontSize: "24px", 
+                  fontWeight: 700,
+                  color: "var(--saddle-brown)",
+                  marginBottom: "8px"
+                }}>
+                  {m.title}
+                </h3>
+                <div style={{ 
+                  fontFamily: "var(--font-main)", 
+                  fontSize: "14px", 
+                  color: "var(--saddle-brown)",
+                  opacity: 0.7,
+                  marginBottom: "16px",
+                  fontWeight: 600
+                }}>
+                  {m.org}
+                </div>
+                <p style={{
+                  fontFamily: "var(--font-main)",
+                  fontSize: "15px",
+                  color: "var(--saddle-brown)",
+                  opacity: 0.9,
+                  lineHeight: 1.6
+                }}>
+                  {m.description}
+                </p>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
     </section>

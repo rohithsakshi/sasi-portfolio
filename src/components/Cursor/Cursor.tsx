@@ -28,7 +28,7 @@ export const Cursor = () => {
     default: {
       height: 24,
       width: 24,
-      backgroundColor: "var(--royal)",
+      backgroundColor: "var(--copper)",
       mixBlendMode: "normal" as const,
       filter: "blur(4px)",
       opacity: 0.8,
@@ -36,7 +36,7 @@ export const Cursor = () => {
     hover: {
       height: 80,
       width: 80,
-      backgroundColor: "var(--royal)",
+      backgroundColor: "var(--copper)",
       opacity: 0.2,
       filter: "blur(0px)",
       mixBlendMode: "difference" as const,

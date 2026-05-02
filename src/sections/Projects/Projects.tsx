@@ -2,6 +2,7 @@
 
 import React, { useEffect, useRef } from "react";
 import * as THREE from "three";
+import styles from "./Projects.module.scss";
 
 const projects = [
   {
@@ -12,7 +13,7 @@ const projects = [
     year: "Jul–Nov '22",
     description: "Redesigned a static air cooler into a fully portable unit with ergonomic features.",
     tags: ["Ergonomics", "User Research", "Prototyping"],
-    modelType: "box", // Mockup type for Three.js
+    modelType: "box",
   },
   {
     id: 2,
@@ -36,7 +37,6 @@ const projects = [
   },
 ];
 
-// Helper component for individual 3D scenes
 const ProjectCanvas = ({ type }: { type: string }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -55,61 +55,49 @@ const ProjectCanvas = ({ type }: { type: string }) => {
     const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
     scene.add(ambientLight);
     
-    const dirLight = new THREE.DirectionalLight(0xc87533, 1.5); // Copper light
+    const dirLight = new THREE.DirectionalLight(0xc87533, 1.5);
     dirLight.position.set(2, 2, 2);
     scene.add(dirLight);
 
-    const material = new THREE.MeshStandardMaterial({
-      color: 0xc87533, // Copper base
-      roughness: 0.3,
-      metalness: 0.8,
-    });
-
     let geometry;
-    if (type === "box") geometry = new THREE.BoxGeometry(1.5, 2, 1);
-    else if (type === "cylinder") geometry = new THREE.CylinderGeometry(0.8, 0.8, 2, 32);
-    else geometry = new THREE.OctahedronGeometry(1.2);
+    if (type === "box") geometry = new THREE.BoxGeometry(2, 2, 2);
+    else if (type === "cylinder") geometry = new THREE.CylinderGeometry(1.2, 1.2, 2, 32);
+    else geometry = new THREE.IcosahedronGeometry(1.5, 0);
 
+    const material = new THREE.MeshStandardMaterial({ 
+      color: 0x8b4513, 
+      roughness: 0.4, 
+      metalness: 0.3,
+      flatShading: true
+    });
     const mesh = new THREE.Mesh(geometry, material);
     scene.add(mesh);
 
     let animationFrameId: number;
-    let isVisible = false;
-
-    // Intersection observer to only render when in view
-    const observer = new IntersectionObserver(([entry]) => {
-      isVisible = entry.isIntersecting;
-    }, { threshold: 0.1 });
-    observer.observe(canvas);
-
     const animate = () => {
+      mesh.rotation.y += 0.01;
+      mesh.rotation.x += 0.005;
+      renderer.render(scene, camera);
       animationFrameId = requestAnimationFrame(animate);
-      if (isVisible) {
-        mesh.rotation.x += 0.005;
-        mesh.rotation.y += 0.01;
-        renderer.render(scene, camera);
-      }
     };
     animate();
 
     const handleResize = () => {
-      if (!canvasRef.current) return;
-      camera.aspect = canvasRef.current.clientWidth / canvasRef.current.clientHeight;
+      camera.aspect = canvas.clientWidth / canvas.clientHeight;
       camera.updateProjectionMatrix();
-      renderer.setSize(canvasRef.current.clientWidth, canvasRef.current.clientHeight);
+      renderer.setSize(canvas.clientWidth, canvas.clientHeight);
     };
-    window.addEventListener("resize", handleResize);
+    window.addEventListener('resize', handleResize);
 
     return () => {
+      window.removeEventListener('resize', handleResize);
       cancelAnimationFrame(animationFrameId);
-      observer.disconnect();
-      window.removeEventListener("resize", handleResize);
       renderer.dispose();
       scene.clear();
     };
   }, [type]);
 
-  return <canvas ref={canvasRef} style={{ width: "100%", height: "100%", display: "block" }} />;
+  return <canvas ref={canvasRef} style={{ width: "100%", height: "100%" }} />;
 };
 
 export default function Projects() {
@@ -118,18 +106,13 @@ export default function Projects() {
 
   useEffect(() => {
     const handleScroll = () => {
-      if (!containerRef.current) return;
-      
       cardsRef.current.forEach((card) => {
         if (!card) return;
         const rect = card.getBoundingClientRect();
         const cardCenter = rect.top + rect.height / 2;
         const windowCenter = window.innerHeight / 2;
-        
-        // Calculate distance from center of screen
         const distanceFromCenter = cardCenter - windowCenter;
         
-        // Trigger flip when close to center
         if (Math.abs(distanceFromCenter) < window.innerHeight * 0.3) {
           card.style.transform = "rotateX(180deg)";
         } else {
@@ -145,135 +128,38 @@ export default function Projects() {
   }, []);
 
   return (
-    <section 
-      id="projects" 
-      ref={containerRef}
-      style={{ 
-        padding: "150px 24px", 
-        backgroundColor: "var(--wheat)",
-        position: "relative",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center"
-      }}
-    >
-      <div style={{ textAlign: "center", marginBottom: "80px" }}>
-        <h2 style={{ 
-          fontFamily: "var(--font-display)", 
-          fontSize: "clamp(36px, 6vw, 56px)", 
-          fontWeight: 700, 
-          color: "var(--saddle-brown)",
-          textTransform: "uppercase"
-        }}>
-          Featured Work
-        </h2>
+    <section id="projects" ref={containerRef} className={styles.projectsSection}>
+      <div className={styles.headingContainer}>
+        <h2 className={styles.heading}>Featured Work</h2>
       </div>
 
-      <div style={{ 
-        display: "flex", 
-        flexDirection: "column", 
-        gap: "100px",
-        width: "100%",
-        maxWidth: "900px",
-        perspective: "1500px" // Perspective applied to parent for 3D flip
-      }}>
+      <div className={styles.cardsContainer}>
         {projects.map((project, i) => (
           <div 
             key={project.id}
-            style={{
-              position: "relative",
-              width: "100%",
-              height: "400px",
-              transformStyle: "preserve-3d",
-              transition: "transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1)",
-            }}
+            className={styles.card}
             ref={(el) => { cardsRef.current[i] = el; }}
           >
             {/* FRONT FACE */}
-            <div style={{
-              position: "absolute",
-              inset: 0,
-              backfaceVisibility: "hidden",
-              backgroundColor: "var(--saddle-brown)",
-              borderRadius: "16px",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              boxShadow: "0 20px 40px rgba(42, 24, 16, 0.2)",
-              border: "1px solid var(--copper)"
-            }}>
-              <h3 style={{ 
-                fontFamily: "var(--font-display)", 
-                fontSize: "32px", 
-                color: "var(--wheat)",
-                textAlign: "center",
-                padding: "20px"
-              }}>
-                {project.title}
-              </h3>
+            <div className={styles.frontFace}>
+              <h3 className={styles.frontTitle}>{project.title}</h3>
             </div>
 
             {/* BACK FACE */}
-            <div style={{
-              position: "absolute",
-              inset: 0,
-              backfaceVisibility: "hidden",
-              backgroundColor: "var(--cream)",
-              borderRadius: "16px",
-              transform: "rotateX(180deg)",
-              boxShadow: "0 20px 40px rgba(42, 24, 16, 0.1)",
-              border: "1px solid var(--saddle-brown)",
-              display: "flex",
-              overflow: "hidden"
-            }}>
-              {/* 3D Canvas Side */}
-              <div style={{ flex: 1, position: "relative", borderRight: "1px solid rgba(139, 69, 19, 0.1)" }}>
+            <div className={styles.backFace}>
+              <div className={styles.canvasSide}>
                 <ProjectCanvas type={project.modelType} />
               </div>
 
-              {/* Info Side */}
-              <div style={{ flex: 1, padding: "40px", display: "flex", flexDirection: "column", justifyContent: "center" }}>
-                <div style={{ 
-                  fontFamily: "var(--font-mono)", 
-                  fontSize: "12px", 
-                  color: "var(--copper)",
-                  marginBottom: "8px",
-                  textTransform: "uppercase"
-                }}>
+              <div className={styles.infoSide}>
+                <div className={styles.meta}>
                   {project.domain} // {project.year}
                 </div>
-                <h3 style={{ 
-                  fontFamily: "var(--font-display)", 
-                  fontSize: "24px", 
-                  fontWeight: 700,
-                  color: "var(--saddle-brown)",
-                  marginBottom: "16px"
-                }}>
-                  {project.title}
-                </h3>
-                <p style={{
-                  fontFamily: "var(--font-main)",
-                  fontSize: "15px",
-                  color: "var(--saddle-brown)",
-                  opacity: 0.9,
-                  lineHeight: 1.6,
-                  marginBottom: "24px"
-                }}>
-                  {project.description}
-                </p>
-                <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+                <h3 className={styles.title}>{project.title}</h3>
+                <p className={styles.description}>{project.description}</p>
+                <div className={styles.tags}>
                   {project.tags.map(tag => (
-                    <span key={tag} style={{
-                      fontSize: "11px",
-                      padding: "6px 12px",
-                      borderRadius: "100px",
-                      border: "1px solid var(--copper)",
-                      color: "var(--copper)",
-                      textTransform: "uppercase",
-                      letterSpacing: "0.05em"
-                    }}>
-                      {tag}
-                    </span>
+                    <span key={tag} className={styles.tag}>{tag}</span>
                   ))}
                 </div>
               </div>

@@ -1,0 +1,132 @@
+.profileCard {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
+  gap: 32px;
+  background: rgba(255, 251, 240, 0.9);
+  border: 1.5px solid var(--saddle-brown);
+  border-radius: 20px;
+  padding: 32px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease-out;
+}
+
+.profileCard:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.12);
+}
+
+.imageContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.profileImage {
+  width: 240px;
+  height: 240px;
+  border-radius: 16px;
+  object-fit: cover;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+}
+
+.timelineContainer {
+  padding: 16px 0;
+}
+
+.timelineTitle {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--copper);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 24px;
+}
+
+.timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.timelineItem {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 16px;
+  position: relative;
+  padding-left: 8px;
+}
+
+.timelineDot {
+  width: 8px;
+  height: 8px;
+  background: var(--copper);
+  border-radius: 50%;
+  margin-top: 6px;
+  position: relative;
+  z-index: 2;
+}
+
+.timeline::before {
+  content: '';
+  position: absolute;
+  left: 4px;
+  top: 12px;
+  bottom: 0;
+  width: 1px;
+  background: var(--saddle-brown);
+  opacity: 0.3;
+}
+
+.timelineContent {
+  padding-top: 0;
+}
+
+.year {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--copper);
+}
+
+.role {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--saddle-brown);
+  margin-top: 2px;
+}
+
+.company {
+  font-size: 12px;
+  color: var(--saddle-brown);
+  opacity: 0.7;
+  margin-top: 2px;
+}
+
+.description {
+  font-size: 13px;
+  color: var(--saddle-brown);
+  opacity: 0.7;
+  line-height: 1.6;
+  margin-top: 6px;
+}
+
+@media (max-width: 768px) {
+  .profileCard {
+    grid-template-columns: 1fr;
+    gap: 24px;
+    padding: 24px;
+  }
+
+  .profileImage {
+    width: 200px;
+    height: 200px;
+    margin: 0 auto;
+  }
+
+  .timelineTitle {
+    margin-bottom: 16px;
+  }
+
+  .timelineItem {
+    gap: 12px;
+  }
+}

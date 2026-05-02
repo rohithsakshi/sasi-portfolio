@@ -191,7 +191,7 @@ export const PortfolioLoader = () => {
                 margin: 0,
                 textTransform: "uppercase"
               }}>
-                Sasidharan K.
+                SASIDHARAN
               </h1>
               <motion.div
                 initial={{ opacity: 0 }}

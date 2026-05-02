@@ -1,0 +1,226 @@
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  padding: 20px 60px;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  transition: all 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+  z-index: 1000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  pointer-events: none; /* Allow interaction with hero when transparent */
+}
+
+.navContainer {
+  width: 100%;
+  max-width: 1400px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  pointer-events: auto;
+  transition: all 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.navLiquid {
+  width: 65%;
+  margin: 10px auto;
+  padding: 12px 30px;
+  background: rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  box-shadow: 
+    0 8px 30px rgba(0, 0, 0, 0.08),
+    inset 0 1px 1px rgba(255, 255, 255, 0.3);
+  overflow: hidden;
+  position: relative;
+
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: linear-gradient(
+      120deg,
+      rgba(255, 255, 255, 0.35),
+      rgba(255, 255, 255, 0.05)
+    );
+    pointer-events: none;
+    z-index: -1;
+  }
+
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    box-shadow:
+      inset 2px 2px 4px rgba(255, 255, 255, 0.4),
+      inset -2px -2px 4px rgba(0, 0, 0, 0.05);
+    pointer-events: none;
+  }
+}
+
+.linksList {
+  display: flex;
+  gap: 40px;
+  align-items: center;
+  transition: all 0.4s ease;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.navLiquid .linksList {
+  gap: 25px;
+}
+
+.navBtn {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--saddle-brown);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-family: var(--font-main);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  transition: color 0.3s ease;
+  white-space: nowrap;
+
+  &:hover {
+    color: var(--copper);
+  }
+}
+
+.hireBtn {
+  background: #7a3e1d;
+  color: #fff;
+  border-radius: 30px;
+  padding: 10px 22px;
+  font-size: 13px;
+  font-weight: 700;
+  font-family: var(--font-main);
+  text-decoration: none;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.4s ease;
+  border: none;
+}
+
+.navLiquid .hireBtn {
+  transform: scale(0.9);
+}
+
+.logo {
+  height: 34px;
+  width: 34px;
+  object-fit: cover;
+  object-position: center 15%;
+  border-radius: 50%;
+  border: 2px solid var(--copper);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: all 0.4s ease;
+}
+
+.navLiquid .logo {
+  transform: scale(0.9);
+}
+
+.hamburger {
+  display: none;
+  flex-direction: column;
+  gap: 5px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  z-index: 1001;
+
+  span {
+    display: block;
+    width: 22px;
+    height: 2px;
+    background: var(--saddle-brown);
+    border-radius: 2px;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+  }
+}
+
+.mobileMenu {
+  position: fixed;
+  top: 80px;
+  left: 20px;
+  right: 20px;
+  background: rgba(245, 222, 179, 0.98);
+  backdrop-filter: blur(20px);
+  border-radius: 20px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(139, 69, 19, 0.1);
+  z-index: 999;
+  transform: translateY(-20px);
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.4s ease;
+
+  &.open {
+    transform: translateY(0);
+    opacity: 1;
+    pointer-events: auto;
+  }
+}
+
+.mobileLink {
+  padding: 12px 16px;
+  background: none;
+  border: none;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--saddle-brown);
+  text-align: left;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  border-radius: 8px;
+  transition: background 0.2s ease;
+
+  &:hover {
+    background: rgba(139, 69, 19, 0.05);
+  }
+}
+
+@media (max-width: 1024px) {
+  .navbar {
+    padding: 20px 40px;
+  }
+}
+
+@media (max-width: 768px) {
+  .navbar {
+    padding: 15px 20px;
+  }
+
+  .navLiquid {
+    width: 90%;
+    padding: 10px 20px;
+  }
+
+  .linksList {
+    display: none;
+  }
+
+  .hamburger {
+    display: flex;
+  }
+}

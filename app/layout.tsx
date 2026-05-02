@@ -15,8 +15,11 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
-  title: "SASIDHARAN K. | Product & Industrial Designer",
-  description: "Premium 3D Portfolio of Sasidharan K., a Product & Industrial Designer.",
+  title: "SASIDHARAN | Product & Industrial Designer",
+  description: "Premium 3D Portfolio of Sasidharan, a Product & Industrial Designer.",
+  icons: {
+    icon: "/sasi1.png",
+  },
 };
 
 export default function RootLayout({

@@ -1,0 +1,65 @@
+.toolCard {
+  background: rgba(255, 251, 240, 0.9);
+  border: 1.5px solid var(--saddle-brown);
+  border-radius: 20px;
+  padding: 32px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease-out;
+}
+
+.toolCard:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.12);
+}
+
+.toolTitle {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--copper);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 24px;
+}
+
+.toolsGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.toolItem {
+  background: rgba(139, 69, 19, 0.08);
+  border: 1px solid var(--saddle-brown);
+  padding: 16px;
+  border-radius: 12px;
+  text-align: center;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--saddle-brown);
+  transition: all 0.3s ease-out;
+  cursor: default;
+}
+
+.toolItem:hover {
+  background: rgba(200, 117, 51, 0.1);
+  border-color: var(--copper);
+  color: var(--copper);
+  transform: translateY(-3px);
+  box-shadow: 0 4px 16px rgba(200, 117, 51, 0.15);
+}
+
+@media (max-width: 1024px) {
+  .toolsGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .toolCard {
+    padding: 24px;
+  }
+
+  .toolsGrid {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,0 +1,232 @@
+.dpSection {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  background: transparent;
+  margin: 0;
+  padding: 0;
+  left: 50%;
+  right: 50%;
+  margin-left: -50vw;
+  margin-right: -50vw;
+
+  @media (max-width: 1024px) {
+    height: auto;
+    width: 100%;
+    margin: 0;
+    left: 0;
+    right: 0;
+    overflow: visible;
+  }
+}
+
+/* Background Typography */
+.dpBgTop,
+.dpBgBottom {
+  position: absolute;
+  width: 100%;
+  left: 0;
+  text-align: center;
+  white-space: nowrap;
+  overflow: visible;
+  font-family: var(--font-display);
+  font-size: clamp(140px, 14vw, 200px);
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: rgba(120, 60, 20, 0.28);
+  z-index: 0;
+  pointer-events: none;
+  user-select: none;
+  text-transform: uppercase;
+
+  @media (max-width: 768px) {
+    font-size: clamp(80px, 18vw, 120px);
+    letter-spacing: 0.04em;
+    opacity: 0.15;
+  }
+}
+
+.dpBgTop { 
+  top: 8%; 
+  @media (max-width: 768px) { top: 4%; }
+}
+.dpBgBottom { 
+  bottom: 8%; 
+  @media (max-width: 768px) { bottom: 4%; }
+}
+
+.dpCanvas {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+
+  @media (max-width: 1024px) {
+    display: flex;
+    flex-direction: column;
+    padding: 100px 20px;
+    height: auto;
+  }
+}
+
+/* --- REFINED IMAGE SYSTEM (VARIED ASPECT RATIOS) --- */
+
+.dpImg {
+  position: absolute;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 
+    0 30px 70px rgba(0, 0, 0, 0.18),
+    0 10px 25px rgba(0, 0, 0, 0.08);
+  transition: transform 0.4s ease, box-shadow 0.4s ease;
+  background: #fff;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  /* Straighten on hover */
+  &:hover {
+    transform: rotate(0deg);
+    z-index: 20 !important;
+  }
+
+  @media (max-width: 1024px) {
+    position: relative !important;
+    left: auto !important;
+    right: auto !important;
+    top: auto !important;
+    bottom: auto !important;
+    transform: none !important;
+    width: 85% !important;
+    max-width: 400px;
+    height: auto !important;
+    aspect-ratio: auto !important;
+    margin: 30px auto;
+  }
+}
+
+.img1 { 
+  top: 12%; 
+  left: 2%; 
+  width: 170px; 
+  height: 170px; 
+  aspect-ratio: 1 / 1;
+  transform: rotate(-28deg); 
+  z-index: 2; 
+}
+
+.img2 { 
+  top: 46%; 
+  left: 50%; 
+  transform: translate(-50%, -50%) rotate(-2deg); 
+  width: 320px; 
+  height: 195px; 
+  aspect-ratio: 16 / 10;
+  z-index: 5; 
+  transition: transform 0.4s ease, box-shadow 0.4s ease;
+
+  &:hover {
+    transform: translate(-50%, -50%) translateY(-6px) scale(1.02) rotate(0deg);
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.15);
+    z-index: 20;
+  }
+}
+
+.img3 { 
+  top: 14%; 
+  right: 2%; 
+  width: 170px; 
+  height: 170px; 
+  aspect-ratio: 1 / 1;
+  transform: rotate(18deg); 
+  z-index: 2;
+}
+
+.img4 { 
+  position: absolute;
+  top: 82%; 
+  right: -4%; 
+  width: 260px; 
+  height: 170px; 
+  transform: rotate(6deg); 
+  border-radius: 18px;
+  z-index: 2;
+}
+
+.img5 { 
+  position: absolute;
+  bottom: -4%; 
+  left: -6%; 
+  width: 200px; 
+  height: 200px;
+  transform: rotate(-18deg); 
+  border-radius: 28px;
+  box-shadow: 10px 20px 40px rgba(0, 0, 0, 0.12);
+  z-index: 2;
+}
+
+/* --- CONTENT CARDS --- */
+
+.dpCard {
+  position: absolute;
+  width: 260px;
+  padding: 0;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  z-index: 6;
+  display: flex;
+  flex-direction: column;
+
+  @media (max-width: 1024px) {
+    position: relative !important;
+    left: auto !important;
+    right: auto !important;
+    top: auto !important;
+    bottom: auto !important;
+    transform: none !important;
+    width: 90% !important;
+    max-width: 450px;
+    margin: 60px auto;
+    text-align: center;
+    padding: 0 20px;
+  }
+}
+
+.cardUc { top: 32%; left: 10%; }
+.cardCf { top: 75%; left: 50%; transform: translateX(-50%); text-align: center; }
+.cardId { top: 42%; right: 10%; }
+
+.iconContainer {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cardCf .iconContainer { margin: 0 auto; }
+
+.title {
+  font-family: var(--font-display);
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  color: #3a1c08;
+  text-transform: uppercase;
+  margin: 8px 0 0;
+}
+
+.desc {
+  font-family: var(--font-main);
+  font-size: 13px;
+  line-height: 1.6;
+  color: #6b4020;
+  opacity: 0.75;
+  margin: 6px 0 0;
+}

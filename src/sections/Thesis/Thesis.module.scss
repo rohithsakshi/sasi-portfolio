@@ -1,0 +1,180 @@
+.thesisSection {
+  padding: 120px 24px;
+  position: relative;
+  z-index: 10;
+  background-color: var(--wheat);
+
+  @media (max-width: 768px) {
+    padding: 80px 20px;
+  }
+}
+
+.thesisContainer {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 72px;
+
+  @media (max-width: 768px) {
+    margin-bottom: 40px;
+  }
+}
+
+.title {
+  font-size: clamp(36px, 6vw, 56px);
+  font-weight: 800;
+  letter-spacing: -1px;
+  margin-top: 12px;
+  color: var(--saddle-brown);
+}
+
+.subtitle {
+  font-size: 16px;
+  color: var(--saddle-brown);
+  opacity: 0.6;
+  margin: 16px auto 0;
+  max-width: 600px;
+}
+
+.heroCard {
+  border-radius: 32px;
+  padding: 56px;
+  margin-bottom: 32px;
+  position: relative;
+  overflow: hidden;
+
+  @media (max-width: 768px) {
+    padding: 32px 20px;
+  }
+}
+
+.heroContent {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 48px;
+  align-items: center;
+
+  @media (max-width: 1024px) {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+}
+
+.tagline {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--copper);
+  display: block;
+  margin-bottom: 16px;
+}
+
+.thesisTitle {
+  font-size: 28px;
+  font-weight: 800;
+  color: var(--saddle-brown);
+  font-family: var(--font-display);
+  line-height: 1.2;
+  margin-bottom: 20px;
+}
+
+.thesisDesc {
+  font-size: 15px;
+  line-height: 1.8;
+  color: var(--saddle-brown);
+  opacity: 0.8;
+  margin-bottom: 28px;
+}
+
+.badgeContainer {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.findingsGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+
+  @media (max-width: 480px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.findingCard {
+  border-radius: 20px;
+  padding: 24px 20px;
+  text-align: center;
+}
+
+.findingValue {
+  font-size: 32px;
+  font-weight: 800;
+  font-family: var(--font-display);
+  background: var(--copper);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 8px;
+}
+
+.findingLabel {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--saddle-brown);
+  margin-bottom: 6px;
+}
+
+.findingDesc {
+  font-size: 11px;
+  color: var(--saddle-brown);
+  opacity: 0.6;
+  line-height: 1.5;
+}
+
+.stagesGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+}
+
+.stageCard {
+  border-radius: 20px;
+  padding: 28px 24px;
+  height: 100%;
+}
+
+.stageNumber {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: var(--copper);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 800;
+  color: white;
+  margin-bottom: 16px;
+  font-family: var(--font-display);
+}
+
+.stageTitle {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--saddle-brown);
+  margin-bottom: 8px;
+  font-family: var(--font-display);
+}
+
+.stageDesc {
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--saddle-brown);
+  opacity: 0.7;
+}

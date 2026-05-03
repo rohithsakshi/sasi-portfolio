@@ -5,6 +5,7 @@ import styles from './About.module.scss';
 import { ThreadsBackground } from './ThreadsBackground';
 import DesignPrinciples from './DesignPrinciples';
 import { HowIWorkCarousel } from './HowIWorkCarousel';
+import { BentoStats } from './BentoStats';
 
 // Embedded Components for simplicity and speed
 
@@ -49,39 +50,6 @@ const ProfileIntro = () => (
 
 
 
-const ImpactStats = () => (
-  <div className={styles.statsGrid}>
-    <div className={styles.statCard}>
-      <div className={styles.statNumber}>80+</div>
-      <div className={styles.statLabel}>User Interviews Conducted</div>
-      <div className={styles.statDesc}>Research forms the foundation of every design decision</div>
-    </div>
-    <div className={styles.statCard}>
-      <div className={styles.statNumber}>5+</div>
-      <div className={styles.statLabel}>Shipped Products</div>
-      <div className={styles.statDesc}>From concept to prototype to real-world use</div>
-    </div>
-    <div className={styles.statCard}>
-      <div className={styles.statNumber}>3+ Years</div>
-      <div className={styles.statLabel}>Design Focus</div>
-      <div className={styles.statDesc}>Deep expertise in product design methodology</div>
-    </div>
-  </div>
-);
-
-const CallToAction = () => {
-  const handleScroll = () => {
-    const el = document.getElementById("projects");
-    if (el) el.scrollIntoView({ behavior: "smooth" });
-  };
-  return (
-    <div className={styles.ctaSection}>
-      <p className={styles.ctaText}>Interested in how I work? Explore my experience and projects below.</p>
-      <button className={styles.ctaButton} onClick={handleScroll}>View My Work</button>
-    </div>
-  );
-};
-
 export default function About() {
   const [isHovered, setIsHovered] = useState(false);
 
@@ -105,10 +73,9 @@ export default function About() {
 
       <HowIWorkCarousel />
 
-      <div className={styles.contentContainer}>
-        <ImpactStats />
-        <CallToAction />
-      </div>
+      <BentoStats />
+
+
     </section>
   );
 }

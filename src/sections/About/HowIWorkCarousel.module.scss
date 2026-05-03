@@ -99,13 +99,13 @@
 }
 
 .activeCard .cardInner {
-  box-shadow: 0 25px 50px -12px rgba(124, 74, 16, 0.15);
+  box-shadow: 0 25px 50px -12px rgba(122, 62, 29, 0.15);
 }
 
 .numberCircle {
   width: 64px;
   height: 64px;
-  background-color: #f5ebd6;
+  background-color: var(--wheat);
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -117,7 +117,7 @@
   font-family: var(--font-display);
   font-size: 20px;
   font-weight: 800;
-  color: #7c4a10;
+  color: var(--saddle-brown);
 }
 
 .label {
@@ -126,7 +126,7 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.15em;
-  color: #b07030;
+  color: var(--copper);
   margin-bottom: 16px;
 }
 

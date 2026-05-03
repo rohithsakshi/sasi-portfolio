@@ -1,7 +1,6 @@
 "use client";
 
-import React, { useEffect, useRef } from "react";
-import * as THREE from "three";
+import React from "react";
 import styles from "./Projects.module.scss";
 
 const projects = [
@@ -12,8 +11,9 @@ const projects = [
     type: "Team Project",
     year: "Jul–Nov '22",
     description: "Redesigned a static air cooler into a fully portable unit with ergonomic features.",
-    tags: ["Ergonomics", "User Research", "Prototyping"],
-    modelType: "box",
+    tags: ["ERGONOMICS", "USER RESEARCH", "PROTOTYPING"],
+    image: "/pac.png",
+    rating: 4.8,
   },
   {
     id: 2,
@@ -22,8 +22,9 @@ const projects = [
     type: "Individual Project",
     year: "Sept '22",
     description: "Innovated a new design concept for domestic shoe storage with physical prototyping.",
-    tags: ["Product Design", "Fabrication", "Innovation"],
-    modelType: "cylinder",
+    tags: ["PRODUCT DESIGN", "FABRICATION", "INNOVATION"],
+    image: "/ss.png",
+    rating: 4.9,
   },
   {
     id: 3,
@@ -32,136 +33,58 @@ const projects = [
     type: "Thesis Project",
     year: "2023",
     description: "Expandable, foldable, portable extension box design with multiple pin configurations.",
-    tags: ["Thesis", "Smart Design", "Portability"],
-    modelType: "prism",
+    tags: ["THESIS", "SMART DESIGN", "PORTABILITY"],
+    image: "/EB.png",
+    rating: 5.0,
   },
 ];
 
-const ProjectCanvas = ({ type }: { type: string }) => {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-
-  useEffect(() => {
-    if (!canvasRef.current) return;
-    const canvas = canvasRef.current;
-    
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(45, canvas.clientWidth / canvas.clientHeight, 0.1, 100);
-    camera.position.z = 5;
-
-    const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    renderer.setSize(canvas.clientWidth, canvas.clientHeight);
-
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
-    scene.add(ambientLight);
-    
-    const dirLight = new THREE.DirectionalLight(0xc87533, 1.5);
-    dirLight.position.set(2, 2, 2);
-    scene.add(dirLight);
-
-    let geometry;
-    if (type === "box") geometry = new THREE.BoxGeometry(2, 2, 2);
-    else if (type === "cylinder") geometry = new THREE.CylinderGeometry(1.2, 1.2, 2, 32);
-    else geometry = new THREE.IcosahedronGeometry(1.5, 0);
-
-    const material = new THREE.MeshStandardMaterial({ 
-      color: 0x8b4513, 
-      roughness: 0.4, 
-      metalness: 0.3,
-      flatShading: true
-    });
-    const mesh = new THREE.Mesh(geometry, material);
-    scene.add(mesh);
-
-    let animationFrameId: number;
-    const animate = () => {
-      mesh.rotation.y += 0.01;
-      mesh.rotation.x += 0.005;
-      renderer.render(scene, camera);
-      animationFrameId = requestAnimationFrame(animate);
-    };
-    animate();
-
-    const handleResize = () => {
-      camera.aspect = canvas.clientWidth / canvas.clientHeight;
-      camera.updateProjectionMatrix();
-      renderer.setSize(canvas.clientWidth, canvas.clientHeight);
-    };
-    window.addEventListener('resize', handleResize);
-
-    return () => {
-      window.removeEventListener('resize', handleResize);
-      cancelAnimationFrame(animationFrameId);
-      renderer.dispose();
-      scene.clear();
-    };
-  }, [type]);
-
-  return <canvas ref={canvasRef} style={{ width: "100%", height: "100%" }} />;
-};
-
 export default function Projects() {
-  const containerRef = useRef<HTMLElement>(null);
-  const cardsRef = useRef<(HTMLDivElement | null)[]>([]);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      cardsRef.current.forEach((card) => {
-        if (!card) return;
-        const rect = card.getBoundingClientRect();
-        const cardCenter = rect.top + rect.height / 2;
-        const windowCenter = window.innerHeight / 2;
-        const distanceFromCenter = cardCenter - windowCenter;
-        
-        if (Math.abs(distanceFromCenter) < window.innerHeight * 0.3) {
-          card.style.transform = "rotateX(180deg)";
-        } else {
-          card.style.transform = "rotateX(0deg)";
-        }
-      });
-    };
-
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    handleScroll();
-
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
   return (
-    <section id="projects" ref={containerRef} className={styles.projectsSection}>
+    <section id="projects" className={styles.projectsSection}>
       <div className={styles.headingContainer}>
         <h2 className={styles.heading}>Featured Work</h2>
       </div>
 
-      <div className={styles.cardsContainer}>
-        {projects.map((project, i) => (
+      <div className={styles.projectsGrid}>
+        {projects.map((project, index) => (
           <div 
-            key={project.id}
-            className={styles.card}
-            ref={(el) => { cardsRef.current[i] = el; }}
+            key={project.id} 
+            className={`${styles.projectCard} ${index === 1 ? styles.inverted : ""}`}
           >
-            {/* FRONT FACE */}
-            <div className={styles.frontFace}>
-              <h3 className={styles.frontTitle}>{project.title}</h3>
-            </div>
-
-            {/* BACK FACE */}
-            <div className={styles.backFace}>
-              <div className={styles.canvasSide}>
-                <ProjectCanvas type={project.modelType} />
+            {/* TOP/BOTTOM PART: Content Area (Info) */}
+            <div className={styles.contentArea}>
+              <div className={styles.badge}>{project.type}</div>
+              
+              <div className={styles.textInfo}>
+                <h3 className={styles.projectTitle}>{project.title}</h3>
+                <div className={styles.projectMeta}>
+                  {project.year} • {project.domain}
+                </div>
+                <p className={styles.projectDescription}>{project.description}</p>
               </div>
 
-              <div className={styles.infoSide}>
-                <div className={styles.meta}>
-                  {project.domain} // {project.year}
-                </div>
-                <h3 className={styles.title}>{project.title}</h3>
-                <p className={styles.description}>{project.description}</p>
-                <div className={styles.tags}>
-                  {project.tags.map(tag => (
-                    <span key={tag} className={styles.tag}>{tag}</span>
-                  ))}
-                </div>
+              <div className={styles.footer}>
+                <button className={styles.viewButton}>
+                  VIEW PROJECT →
+                </button>
+              </div>
+            </div>
+
+            {/* TOP/BOTTOM PART: Image Area */}
+            <div className={styles.imageArea}>
+              <img 
+                src={project.image} 
+                alt={project.title} 
+                className={styles.projectImage} 
+              />
+              <div className={styles.tagsOverlay}>
+                {project.tags.slice(0, 2).map((tag) => (
+                  <span key={tag} className={styles.tagPill}>{tag}</span>
+                ))}
+              </div>
+              <div className={styles.rating}>
+                ★ {project.rating}
               </div>
             </div>
           </div>
@@ -170,3 +93,6 @@ export default function Projects() {
     </section>
   );
 }
+
+
+

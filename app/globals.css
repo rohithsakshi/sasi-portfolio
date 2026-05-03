@@ -10,6 +10,16 @@
   --font-mono: monospace;
 }
 
+::selection {
+  background-color: var(--saddle-brown);
+  color: var(--wheat);
+}
+
+::-moz-selection {
+  background-color: var(--saddle-brown);
+  color: var(--wheat);
+}
+
 * {
   box-sizing: border-box;
   padding: 0;

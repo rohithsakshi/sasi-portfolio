@@ -48,7 +48,7 @@ const ProfileIntro = () => (
 
 const DesignProcess = () => (
   <div className={styles.processCard}>
-    <h3 className={styles.processHeading}>My Design Process</h3>
+    <h3 className={styles.processHeading}>How I Work</h3>
     <div className={styles.processSteps}>
       <div className={styles.step}>
         <div className={styles.stepIcon}>1</div>

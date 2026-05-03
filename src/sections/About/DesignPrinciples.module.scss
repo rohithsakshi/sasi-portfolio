@@ -49,11 +49,11 @@
 
 .dpBgTop { 
   top: 8%; 
-  @media (max-width: 768px) { top: 4%; }
+  @media (max-width: 768px) { top: 1%; }
 }
 .dpBgBottom { 
   bottom: 8%; 
-  @media (max-width: 768px) { bottom: 4%; }
+  @media (max-width: 768px) { bottom: 1%; }
 }
 
 .dpCanvas {

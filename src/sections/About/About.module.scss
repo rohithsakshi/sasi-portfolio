@@ -1,6 +1,11 @@
 .aboutSection {
   position: relative;
-  background: var(--wheat);
+  background: radial-gradient(
+    ellipse at 50% 40%,
+    #eedcbe 0%,
+    #e2cba8 45%,
+    #d0b48a 100%
+  );
   /* Removed global padding to allow full-bleed sections */
   min-height: 100vh;
   overflow: hidden;
@@ -22,7 +27,8 @@
   z-index: 1;
   max-width: 1200px;
   margin: 0 auto;
-  padding: 120px 20px; /* Moved padding here */
+  padding: 120px 20px;
+  /* Moved padding here */
   display: flex;
   flex-direction: column;
   gap: 120px;
@@ -295,12 +301,15 @@
     grid-template-columns: 1fr;
     gap: 40px;
   }
+
   .imageContainer img {
     max-width: 500px;
     margin: 0 auto;
     display: block;
   }
-  .pillarsGrid, .statsGrid {
+
+  .pillarsGrid,
+  .statsGrid {
     grid-template-columns: repeat(2, 1fr);
   }
 }
@@ -309,23 +318,30 @@
   .aboutSection {
     padding: 80px 5%;
   }
+
   .contentContainer {
     gap: 80px;
   }
+
   .quote {
     font-size: 28px;
   }
-  .pillarsGrid, .statsGrid {
+
+  .pillarsGrid,
+  .statsGrid {
     grid-template-columns: 1fr;
   }
+
   .processCard {
     padding: 32px 24px;
   }
+
   .step {
     grid-template-columns: 1fr;
     gap: 16px;
     text-align: center;
   }
+
   .stepIcon {
     margin: 0 auto;
   }

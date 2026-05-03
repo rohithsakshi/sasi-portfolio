@@ -6,12 +6,7 @@
   padding-top: 100px;
 
   /* Radial gradient for depth — warm beige that darkens at edges */
-  background: radial-gradient(
-    ellipse at 50% 40%,
-    #eedcbe 0%,
-    #e2cba8 45%,
-    #d0b48a 100%
-  );
+  background: var(--wheat);
 
   opacity: 0;
   transform: translateY(20px);

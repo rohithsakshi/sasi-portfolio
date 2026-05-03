@@ -32,7 +32,7 @@ const bioLines = [
 
 const TickerRow = ({ skills, direction }: { skills: string[], direction: "left-to-right" | "right-to-left" }) => {
   const animationClass = direction === "left-to-right" ? styles.scrollLeftToRight : styles.scrollRightToLeft;
-  
+
   return (
     <div className={styles.tickerStrip}>
       <div className={`${styles.tickerTrack} ${animationClass}`}>
@@ -69,7 +69,7 @@ export default function Skills() {
   return (
     <section id="skills" className={styles.skillsSection}>
       <h2 className={styles.heading}>Skills</h2>
-      
+
       <div className={styles.bioPara}>
         {bioLines.map((line, idx) => (
           <React.Fragment key={idx}>

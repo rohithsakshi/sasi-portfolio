@@ -49,7 +49,8 @@
   transition: transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
 
   @media (max-width: 768px) {
-    height: 500px; /* Taller on mobile to fit content stack */
+    height: 500px;
+    /* Taller on mobile to fit content stack */
   }
 }
 

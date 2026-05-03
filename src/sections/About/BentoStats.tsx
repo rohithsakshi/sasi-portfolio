@@ -40,7 +40,7 @@ const CountUp = ({ value, suffix, duration = 1.6, delay = 0 }: { value: number; 
 export const BentoStats = () => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [isCtaActive, setIsCtaActive] = useState(false);
-  
+
   const { scrollYProgress } = useScroll({
     target: containerRef,
     offset: ["start end", "end start"]
@@ -52,9 +52,9 @@ export const BentoStats = () => {
   return (
     <div className={styles.statsWrapper}>
       <div className={styles.bentoGrid} ref={containerRef}>
-        
+
         {/* Card 1: Research (Tall Left) */}
-        <motion.div 
+        <motion.div
           className={`${styles.card} ${styles.cardResearch}`}
           whileHover={{ translateY: -4 }}
         >
@@ -73,7 +73,7 @@ export const BentoStats = () => {
         </motion.div>
 
         {/* Card 2: Impact (Middle Top) */}
-        <motion.div 
+        <motion.div
           className={`${styles.card} ${styles.cardImpact}`}
           whileHover={{ translateY: -4 }}
         >
@@ -92,7 +92,7 @@ export const BentoStats = () => {
         </motion.div>
 
         {/* Card 3: Experience (Tall Right) */}
-        <motion.div 
+        <motion.div
           className={`${styles.card} ${styles.cardExperience}`}
           whileHover={{ translateY: -4 }}
         >
@@ -107,7 +107,7 @@ export const BentoStats = () => {
         </motion.div>
 
         {/* Card 4: CTA (Middle Bottom) */}
-        <motion.div 
+        <motion.div
           className={`${styles.card} ${styles.cardCta} ${isCtaActive ? styles.ctaActive : ""}`}
           whileHover={{ translateY: -4 }}
           onClick={() => setIsCtaActive(!isCtaActive)}

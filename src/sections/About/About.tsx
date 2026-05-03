@@ -1,8 +1,6 @@
 "use client";
 
-import { useState } from 'react';
 import styles from './About.module.scss';
-import { ThreadsBackground } from './ThreadsBackground';
 import DesignPrinciples from './DesignPrinciples';
 import { HowIWorkCarousel } from './HowIWorkCarousel';
 import { BentoStats } from './BentoStats';
@@ -51,19 +49,11 @@ const ProfileIntro = () => (
 
 
 export default function About() {
-  const [isHovered, setIsHovered] = useState(false);
-
   return (
     <section
       className={styles.aboutSection}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
       id="about"
     >
-      <div className={styles.threadsContainer}>
-        <ThreadsBackground isHovered={isHovered} />
-      </div>
-
       <div className={styles.contentContainer}>
         <HeroStatement />
         <ProfileIntro />
@@ -74,8 +64,6 @@ export default function About() {
       <HowIWorkCarousel />
 
       <BentoStats />
-
-
     </section>
   );
 }

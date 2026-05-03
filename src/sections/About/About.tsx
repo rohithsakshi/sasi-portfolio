@@ -4,6 +4,7 @@ import { useState } from 'react';
 import styles from './About.module.scss';
 import { ThreadsBackground } from './ThreadsBackground';
 import DesignPrinciples from './DesignPrinciples';
+import { HowIWorkCarousel } from './HowIWorkCarousel';
 
 // Embedded Components for simplicity and speed
 
@@ -46,49 +47,7 @@ const ProfileIntro = () => (
 
 // DesignPrinciples is now a separate component imported above.
 
-const DesignProcess = () => (
-  <div className={styles.processCard}>
-    <h3 className={styles.processHeading}>How I Work</h3>
-    <div className={styles.processSteps}>
-      <div className={styles.step}>
-        <div className={styles.stepIcon}>1</div>
-        <div>
-          <h4 className={styles.stepTitle}>Research</h4>
-          <p className={styles.stepDesc}>
-            Understanding is foundation. I dive deep into user behaviors, pain points, and contexts. Through interviews, observation, and empathy, I uncover the real problems worth solving.
-          </p>
-        </div>
-      </div>
-      <div className={styles.step}>
-        <div className={styles.stepIcon}>2</div>
-        <div>
-          <h4 className={styles.stepTitle}>Concept</h4>
-          <p className={styles.stepDesc}>
-            Ideas emerge from insights. Using design thinking methodologies, I explore multiple solutions, sketch rapidly, and challenge assumptions. The best idea isn't obvious—it's discovered through iteration.
-          </p>
-        </div>
-      </div>
-      <div className={styles.step}>
-        <div className={styles.stepIcon}>3</div>
-        <div>
-          <h4 className={styles.stepTitle}>Prototype</h4>
-          <p className={styles.stepDesc}>
-            Ideas become real. I transform concepts into tangible prototypes. This means 3D modeling, material testing, and understanding fabrication constraints. Design must work in the real world, not just on screen.
-          </p>
-        </div>
-      </div>
-      <div className={styles.step}>
-        <div className={styles.stepIcon}>4</div>
-        <div>
-          <h4 className={styles.stepTitle}>Validate</h4>
-          <p className={styles.stepDesc}>
-            Testing reveals truth. Back to users with prototypes. Their feedback drives refinement. This iterative cycle—design, test, learn, improve—is where great products are born.
-          </p>
-        </div>
-      </div>
-    </div>
-  </div>
-);
+
 
 const ImpactStats = () => (
   <div className={styles.statsGrid}>
@@ -144,8 +103,9 @@ export default function About() {
 
       <DesignPrinciples />
 
+      <HowIWorkCarousel />
+
       <div className={styles.contentContainer}>
-        <DesignProcess />
         <ImpactStats />
         <CallToAction />
       </div>

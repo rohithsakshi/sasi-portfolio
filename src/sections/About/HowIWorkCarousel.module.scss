@@ -1,0 +1,208 @@
+.carouselSection {
+  padding: 100px 0;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.sectionHeading {
+  font-family: var(--font-display);
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--saddle-brown);
+  margin-bottom: 20px; // Reduced to fit hint
+  text-align: center;
+}
+
+.hoverHint {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--saddle-brown);
+  opacity: 0.4;
+  margin-bottom: 40px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  &::before, &::after {
+    content: "";
+    width: 20px;
+    height: 1px;
+    background: currentColor;
+    opacity: 0.3;
+  }
+
+  @media (max-width: 1024px) {
+    display: none; // No hover on mobile
+  }
+}
+
+.carouselWrapper {
+  width: 100%;
+  max-width: 1200px;
+  position: relative;
+  overflow: hidden;
+}
+
+.mainContainer {
+  position: relative;
+  width: 100%;
+  height: 420px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cardsContainer {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.card {
+  position: absolute;
+  width: 380px;
+  height: 380px;
+  flex-shrink: 0;
+  cursor: grab;
+
+  &:active {
+    cursor: grabbing;
+  }
+
+  @media (max-width: 768px) {
+    width: 300px;
+    height: 340px;
+  }
+}
+
+.cardInner {
+  width: 100%;
+  height: 100%;
+  background: var(--cream);
+  border-radius: 16px;
+  padding: 48px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  border: 1px solid rgba(139, 69, 19, 0.05);
+  transition: box-shadow 0.5s ease;
+}
+
+.activeCard .cardInner {
+  box-shadow: 0 25px 50px -12px rgba(124, 74, 16, 0.15);
+}
+
+.numberCircle {
+  width: 64px;
+  height: 64px;
+  background-color: #f5ebd6;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 24px;
+}
+
+.number {
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 800;
+  color: #7c4a10;
+}
+
+.label {
+  font-family: var(--font-main);
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: #b07030;
+  margin-bottom: 16px;
+}
+
+.title {
+  font-family: var(--font-display);
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--saddle-brown);
+  margin-bottom: 16px;
+}
+
+.desc {
+  font-family: var(--font-main);
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--saddle-brown);
+  opacity: 0.75;
+}
+
+.navArrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 20;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: white;
+  border: 1px solid rgba(139, 69, 19, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--saddle-brown);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+
+  &:hover {
+    background: var(--cream);
+    color: var(--copper);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+  }
+
+  @media (max-width: 1024px) {
+    display: none; // Rely on swipe and dots on mobile
+  }
+}
+
+.leftArrow {
+  left: 20px;
+}
+
+.rightArrow {
+  right: 20px;
+}
+
+.dotsContainer {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 40px;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(139, 69, 19, 0.2);
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  transition: all 0.3s ease;
+
+  &.activeDot {
+    width: 24px;
+    background: var(--copper);
+    border-radius: 100px;
+  }
+}

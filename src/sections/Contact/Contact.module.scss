@@ -1,7 +1,12 @@
 .contactSection {
   position: relative;
   padding: 150px 24px;
-  background-color: var(--wheat);
+  background: radial-gradient(
+    ellipse at 50% 40%,
+    #eedcbe 0%,
+    #e2cba8 45%,
+    #d0b48a 100%
+  );
   min-height: 100vh;
   display: flex;
   flex-direction: column;

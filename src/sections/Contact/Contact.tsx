@@ -1,138 +1,332 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
-import * as THREE from "three";
-import styles from "./Contact.module.scss";
+import React, { useState } from "react";
+
+const contactLinks = [
+  { icon: "✉", label: "Sasiharsha6602@gmail.com", href: "mailto:Sasiharsha6602@gmail.com" },
+  { icon: "☏", label: "+91 6382931941", href: "tel:+916382931941" },
+  { icon: "in", label: "linkedin.com/in/sasidharan", href: "https://www.linkedin.com/in/sasidharan" },
+  { icon: "Be", label: "behance.net/sasidharan14", href: "https://www.behance.net/sasidharan14" },
+];
 
 export default function Contact() {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [isMobile, setIsMobile] = useState(false);
 
-  useEffect(() => {
-    if (!canvasRef.current) return;
-    
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(45, canvasRef.current.clientWidth / canvasRef.current.clientHeight, 0.1, 100);
-    camera.position.z = 15;
-
-    const renderer = new THREE.WebGLRenderer({ canvas: canvasRef.current, alpha: true, antialias: true });
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    renderer.setSize(canvasRef.current.clientWidth, canvasRef.current.clientHeight);
-
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
-    scene.add(ambientLight);
-    
-    const dirLight = new THREE.DirectionalLight(0xc87533, 1.0);
-    dirLight.position.set(5, 5, 5);
-    scene.add(dirLight);
-
-    const material = new THREE.MeshStandardMaterial({
-      color: 0x8B4513,
-      roughness: 0.8,
-      metalness: 0.1,
-      wireframe: true,
-      transparent: true,
-      opacity: 0.2
-    });
-
-    const geometry = new THREE.IcosahedronGeometry(6, 1);
-    const mesh = new THREE.Mesh(geometry, material);
-    scene.add(mesh);
-
-    let animationFrameId: number;
-
-    const animate = () => {
-      animationFrameId = requestAnimationFrame(animate);
-      mesh.rotation.x += 0.001;
-      mesh.rotation.y += 0.002;
-      renderer.render(scene, camera);
-    };
-    animate();
-
-    const handleResize = () => {
-      if (!canvasRef.current) return;
-      camera.aspect = canvasRef.current.clientWidth / canvasRef.current.clientHeight;
-      camera.updateProjectionMatrix();
-      renderer.setSize(canvasRef.current.clientWidth, canvasRef.current.clientHeight);
-    };
-    window.addEventListener("resize", handleResize);
-
-    return () => {
-      cancelAnimationFrame(animationFrameId);
-      window.removeEventListener("resize", handleResize);
-      renderer.dispose();
-      scene.clear();
-    };
+  React.useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 768);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
   }, []);
 
-  const [hoveredLink, setHoveredLink] = useState<number | null>(null);
-
-  const links = [
-    { label: "Email", value: "Sasiharsha6602@gmail.com", href: "mailto:Sasiharsha6602@gmail.com" },
-    { label: "LinkedIn", value: "linkedin.com/in/sasidharan", href: "https://www.linkedin.com/in/sasidharan" },
-    { label: "Behance", value: "behance.net/sasidharan14", href: "https://www.behance.net/sasidharan14" },
-    { label: "Phone", value: "+91 6382931941", href: "tel:+916382931941" },
-  ];
-
   return (
-    <section id="contact" className={styles.contactSection}>
-      <canvas ref={canvasRef} className={styles.canvasBg} />
-
-      <div className={styles.content}>
-        <h2 className={styles.heading}>Let's Connect</h2>
-        <p className={styles.subtext}>
-          Open to freelance projects, internships, and design collaborations.
-        </p>
-
-        <form className={styles.form} onSubmit={(e) => e.preventDefault()}>
-          <div className={styles.inputGroup}>
-            <input type="text" placeholder="YOUR NAME" className={styles.input} />
-          </div>
-          <div className={styles.inputGroup}>
-            <input type="email" placeholder="EMAIL ADDRESS" className={styles.input} />
-          </div>
-          <div className={styles.inputGroup}>
-            <textarea placeholder="YOUR MESSAGE" rows={3} className={styles.textarea} />
-          </div>
-          
-          <button 
-            className={styles.submitBtn}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.transform = "scale(1.05)";
-              e.currentTarget.style.boxShadow = "0 0 20px rgba(200, 117, 51, 0.4)";
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.transform = "scale(1)";
-              e.currentTarget.style.boxShadow = "0 0 0 rgba(200, 117, 51, 0)";
+    <section
+      id="contact"
+      style={{
+        padding: 0,
+        margin: 0,
+        minHeight: "100vh",
+        height: isMobile ? "auto" : "100vh",
+        display: "flex",
+        alignItems: "stretch",
+        justifyContent: "stretch",
+        overflow: "hidden",
+        background: "radial-gradient(ellipse at 50% 40%, #eedcbe 0%, #e2cba8 45%, #d0b48a 100%)",
+      }}
+    >
+      <div
+        style={{
+          display: "flex",
+          flexDirection: isMobile ? "column" : "row",
+          width: "100%",
+          maxWidth: "100%",
+          flex: 1,
+          height: isMobile ? "auto" : "100vh",
+          minHeight: isMobile ? "100vh" : "100vh",
+          borderRadius: 0,
+          overflow: "hidden",
+          boxShadow: "none",
+        }}
+      >
+        {/* ── LEFT PANEL ── */}
+        <div
+          style={{
+            width: isMobile ? "100%" : "42%",
+            minWidth: isMobile ? "100%" : "42%",
+            height: isMobile ? "auto" : "100%",
+            minHeight: isMobile ? "340px" : "100vh",
+            background: "linear-gradient(160deg, #8B4513 0%, #6B3410 60%, #4A2008 100%)",
+            padding: "40px 36px",
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "flex-end",
+            position: "relative",
+            clipPath: isMobile ? "none" : "polygon(0 0, 88% 0, 100% 100%, 0 100%)",
+          }}
+        >
+          {/* Open to Work badge */}
+          <div
+            style={{
+              position: "absolute",
+              top: "24px",
+              left: "24px",
+              background: "rgba(245,222,179,0.15)",
+              border: "1px solid rgba(245,222,179,0.25)",
+              borderRadius: "20px",
+              padding: "5px 12px",
             }}
           >
-            Send Message
-          </button>
-        </form>
-
-        <div className={styles.socialGrid}>
-          {links.map((link, i) => (
-            <a 
-              key={i}
-              href={link.href}
-              target={link.href.startsWith("http") ? "_blank" : undefined}
-              rel="noopener noreferrer"
-              className={styles.socialLink}
-              style={{ transform: hoveredLink === i ? "translateY(-4px)" : "translateY(0)" }}
-              onMouseEnter={() => setHoveredLink(i)}
-              onMouseLeave={() => setHoveredLink(null)}
+            <span
+              style={{
+                fontSize: "9px",
+                color: "rgba(245,222,179,0.8)",
+                letterSpacing: "1.5px",
+                textTransform: "uppercase",
+              }}
             >
-              <div 
-                className={styles.socialLabel}
-                style={{ color: hoveredLink === i ? "var(--copper)" : "var(--saddle-brown)" }}
+              Open to Work
+            </span>
+          </div>
+
+          {/* Profile photo */}
+          <img
+            src="/sasi1.png"
+            alt="Sasidharan K"
+            style={{
+              width: "72px",
+              height: "72px",
+              borderRadius: "50%",
+              border: "3px solid rgba(245,222,179,0.35)",
+              objectFit: "cover",
+              objectPosition: "top center",
+              marginBottom: "16px",
+              display: "block",
+              flexShrink: 0,
+            }}
+          />
+
+          {/* Name + Role */}
+          <div
+            style={{
+              fontSize: "20px",
+              fontWeight: 800,
+              color: "#F5DEB3",
+              fontFamily: "serif",
+              lineHeight: 1.1,
+            }}
+          >
+            Sasidharan K
+          </div>
+          <div
+            style={{
+              fontSize: "10px",
+              color: "rgba(245,222,179,0.6)",
+              letterSpacing: "2px",
+              textTransform: "uppercase",
+              marginTop: "5px",
+            }}
+          >
+            Product &amp; Industrial Designer
+          </div>
+
+          {/* Divider */}
+          <div
+            style={{
+              width: "32px",
+              height: "1px",
+              background: "rgba(245,222,179,0.3)",
+              margin: "18px 0",
+            }}
+          />
+
+          {/* Contact links */}
+          {contactLinks.map((item, i) => (
+            <a
+              key={i}
+              href={item.href}
+              target={item.href.startsWith("http") ? "_blank" : undefined}
+              rel="noreferrer"
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "10px",
+                textDecoration: "none",
+                marginBottom: "10px",
+              }}
+            >
+              <div
+                style={{
+                  width: "26px",
+                  height: "26px",
+                  borderRadius: "6px",
+                  flexShrink: 0,
+                  background: "rgba(245,222,179,0.12)",
+                  border: "1px solid rgba(245,222,179,0.2)",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  fontSize: "9px",
+                  color: "#F5DEB3",
+                  fontWeight: 700,
+                }}
               >
-                {link.label}
+                {item.icon}
               </div>
+              <span
+                style={{
+                  fontSize: "10px",
+                  color: "rgba(245,222,179,0.7)",
+                  wordBreak: "break-all",
+                }}
+              >
+                {item.label}
+              </span>
             </a>
           ))}
         </div>
 
-        <div className={styles.footerLogo}>
-          <img src="/sasi1.png" alt="SK Logo" className={styles.logoImg} />
+        {/* ── RIGHT PANEL ── */}
+        <div
+          style={{
+            flex: 1,
+            background: "#FFF8EE",
+            height: isMobile ? "auto" : "100%",
+            minHeight: isMobile ? "auto" : "100vh",
+            padding: isMobile ? "40px 24px" : "80px 100px",
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            gap: "32px",
+          }}
+        >
+          {/* Inner content — centered, max-width for readability */}
+          <div style={{ maxWidth: "560px", width: "100%", margin: "0 auto", display: "flex", flexDirection: "column", gap: "32px" }}>
+          {/* Header */}
+          <div>
+            <div
+              style={{
+                fontSize: "10px",
+                letterSpacing: "2.5px",
+                color: "rgba(139,69,19,0.45)",
+                textTransform: "uppercase",
+                marginBottom: "8px",
+              }}
+            >
+              Get in touch
+            </div>
+            <div
+              style={{
+                fontSize: "28px",
+                fontWeight: 800,
+                color: "#8B4513",
+                fontFamily: "serif",
+                lineHeight: 1.1,
+                letterSpacing: "-0.5px",
+              }}
+            >
+              Let&apos;s build
+              <br />
+              something great.
+            </div>
+            <div
+              style={{
+                fontSize: "13px",
+                color: "#A0522D",
+                marginTop: "10px",
+                opacity: 0.8,
+              }}
+            >
+              Open to freelance projects, internships, and design collaborations.
+            </div>
+          </div>
+
+          {/* Form */}
+          <form
+            onSubmit={(e) => e.preventDefault()}
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              gap: "20px",
+            }}
+          >
+            <div style={{ borderBottom: "1.5px solid rgba(139,69,19,0.2)", paddingBottom: "8px" }}>
+              <input
+                type="text"
+                placeholder="Your Name"
+                style={{
+                  width: "100%",
+                  background: "transparent",
+                  border: "none",
+                  outline: "none",
+                  fontSize: "14px",
+                  color: "#8B4513",
+                  fontFamily: "inherit",
+                }}
+              />
+            </div>
+
+            <div style={{ borderBottom: "1.5px solid rgba(139,69,19,0.2)", paddingBottom: "8px" }}>
+              <input
+                type="email"
+                placeholder="Email Address"
+                style={{
+                  width: "100%",
+                  background: "transparent",
+                  border: "none",
+                  outline: "none",
+                  fontSize: "14px",
+                  color: "#8B4513",
+                  fontFamily: "inherit",
+                }}
+              />
+            </div>
+
+            <div style={{ borderBottom: "1.5px solid rgba(139,69,19,0.2)", paddingBottom: "8px" }}>
+              <textarea
+                placeholder="Your Message"
+                rows={4}
+                style={{
+                  width: "100%",
+                  background: "transparent",
+                  border: "none",
+                  outline: "none",
+                  fontSize: "14px",
+                  color: "#8B4513",
+                  fontFamily: "inherit",
+                  resize: "none",
+                  lineHeight: "1.6",
+                }}
+              />
+            </div>
+
+            <button
+              type="submit"
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = "#6B3410";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = "#8B4513";
+              }}
+              style={{
+                background: "#8B4513",
+                color: "#F5DEB3",
+                border: "none",
+                borderRadius: "8px",
+                padding: "14px 32px",
+                fontSize: "11px",
+                letterSpacing: "2px",
+                textTransform: "uppercase",
+                cursor: "pointer",
+                width: "100%",
+                fontFamily: "inherit",
+                fontWeight: 600,
+                transition: "background 0.2s ease",
+              }}
+            >
+              Send Message →
+            </button>
+          </form>
+          </div>{/* end inner max-width wrapper */}
         </div>
       </div>
     </section>

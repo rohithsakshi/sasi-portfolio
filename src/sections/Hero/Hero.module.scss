@@ -139,6 +139,63 @@
   }
 }
 
+.ctaGroup {
+  display: flex;
+  gap: 16px;
+  margin-top: 40px;
+
+  @media (max-width: 768px) {
+    justify-content: center;
+    margin-top: 30px;
+  }
+}
+
+.primaryBtn,
+.secondaryBtn {
+  padding: 14px 28px;
+  font-family: var(--font-main);
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  border-radius: 100px;
+  cursor: pointer;
+  transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+  border: none;
+}
+
+.primaryBtn {
+  background: var(--saddle-brown);
+  color: var(--wheat);
+  box-shadow: 0 10px 30px rgba(139, 69, 19, 0.15);
+
+  &:hover {
+    background: var(--copper);
+    transform: translateY(-2px);
+    box-shadow: 0 15px 35px rgba(139, 69, 19, 0.25);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+.secondaryBtn {
+  background: transparent;
+  color: var(--saddle-brown);
+  border: 1.5px solid rgba(139, 69, 19, 0.25);
+
+  &:hover {
+    background: rgba(139, 69, 19, 0.05);
+    border-color: var(--saddle-brown);
+    transform: translateY(-2px);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+}
+
 /* Bottom center product label */
 .productTagline {
   position: absolute;

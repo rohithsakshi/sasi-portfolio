@@ -39,7 +39,6 @@ const CountUp = ({ value, suffix, duration = 1.6, delay = 0 }: { value: number; 
 
 export const BentoStats = () => {
   const containerRef = useRef<HTMLDivElement>(null);
-  const [isCtaActive, setIsCtaActive] = useState(false);
 
   const { scrollYProgress } = useScroll({
     target: containerRef,
@@ -108,9 +107,12 @@ export const BentoStats = () => {
 
         {/* Card 4: CTA (Middle Bottom) */}
         <motion.div
-          className={`${styles.card} ${styles.cardCta} ${isCtaActive ? styles.ctaActive : ""}`}
+          className={`${styles.card} ${styles.cardCta}`}
           whileHover={{ translateY: -4 }}
-          onClick={() => setIsCtaActive(!isCtaActive)}
+          onClick={() => {
+            const target = document.getElementById('work');
+            if (target) target.scrollIntoView({ behavior: 'smooth' });
+          }}
         >
           <div className={styles.ctaContent}>
             <p className={styles.ctaText}>Interested in how I work? Explore my experience and projects below.</p>

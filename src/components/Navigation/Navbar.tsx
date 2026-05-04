@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import styles from "./Navbar.module.scss";
 
-const links = ["About", "Skills", "Projects", "Thesis", "Contact"];
+const links = ["About", "Skills", "Work", "Experience", "Thesis", "Contact"];
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
@@ -53,9 +53,12 @@ export default function Navbar() {
               </li>
             ))}
             <li>
-              <a href="mailto:Sasiharsha6602@gmail.com" className={styles.hireBtn}>
+              <button 
+                onClick={() => scrollTo("contact")} 
+                className={styles.hireBtn}
+              >
                 Hire Me
-              </a>
+              </button>
             </li>
           </ul>
 
@@ -90,13 +93,13 @@ export default function Navbar() {
             {link}
           </button>
         ))}
-        <a 
-          href="mailto:Sasiharsha6602@gmail.com" 
-          className={styles.hireBtn} 
+        <button 
+          onClick={() => scrollTo("contact")} 
+          className={styles.hireBtn}
           style={{ textAlign: "center", marginTop: "10px" }}
         >
           Hire Me
-        </a>
+        </button>
       </div>
     </>
   );

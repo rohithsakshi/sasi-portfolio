@@ -41,7 +41,7 @@ const projects = [
 
 export default function Projects() {
   return (
-    <section id="projects" className={styles.projectsSection}>
+    <section id="work" className={styles.projectsSection}>
       <div className={styles.headingContainer}>
         <h2 className={styles.heading}>Featured Work</h2>
       </div>
@@ -65,7 +65,14 @@ export default function Projects() {
               </div>
 
               <div className={styles.footer}>
-                <button className={styles.viewButton}>
+                <button 
+                  className={styles.viewButton}
+                  onClick={() => {
+                    const targetId = project.id === 3 ? 'thesis' : 'contact';
+                    const target = document.getElementById(targetId);
+                    if (target) target.scrollIntoView({ behavior: 'smooth' });
+                  }}
+                >
                   VIEW PROJECT →
                 </button>
               </div>

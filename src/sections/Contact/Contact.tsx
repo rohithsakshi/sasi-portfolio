@@ -23,10 +23,11 @@ export default function Contact() {
     <section
       id="contact"
       style={{
+        width: "100%",
         padding: 0,
         margin: 0,
-        minHeight: "100vh",
-        height: isMobile ? "auto" : "100vh",
+        minHeight: "auto",
+        height: "auto",
         display: "flex",
         alignItems: "stretch",
         justifyContent: "stretch",
@@ -40,9 +41,9 @@ export default function Contact() {
           flexDirection: isMobile ? "column" : "row",
           width: "100%",
           maxWidth: "100%",
-          flex: 1,
-          height: isMobile ? "auto" : "100vh",
-          minHeight: isMobile ? "100vh" : "100vh",
+          margin: "0 auto",
+          height: "auto",
+          minHeight: "auto",
           borderRadius: 0,
           overflow: "hidden",
           boxShadow: "none",
@@ -53,10 +54,11 @@ export default function Contact() {
           style={{
             width: isMobile ? "100%" : "42%",
             minWidth: isMobile ? "100%" : "42%",
-            height: isMobile ? "auto" : "100%",
-            minHeight: isMobile ? "340px" : "100vh",
+            height: "auto",
+            minHeight: isMobile ? "340px" : "auto",
             background: "linear-gradient(160deg, #8B4513 0%, #6B3410 60%, #4A2008 100%)",
-            padding: "40px 36px",
+            padding: "36px 32px",
+            borderRadius: 0,
             display: "flex",
             flexDirection: "column",
             justifyContent: "flex-end",
@@ -93,13 +95,13 @@ export default function Contact() {
             src="/sasi1.png"
             alt="Sasidharan K"
             style={{
-              width: "72px",
-              height: "72px",
+              width: "56px",
+              height: "56px",
               borderRadius: "50%",
               border: "3px solid rgba(245,222,179,0.35)",
               objectFit: "cover",
               objectPosition: "top center",
-              marginBottom: "16px",
+              marginBottom: "12px",
               display: "block",
               flexShrink: 0,
             }}
@@ -108,7 +110,7 @@ export default function Contact() {
           {/* Name + Role */}
           <div
             style={{
-              fontSize: "20px",
+              fontSize: "17px",
               fontWeight: 800,
               color: "#F5DEB3",
               fontFamily: "serif",
@@ -135,7 +137,7 @@ export default function Contact() {
               width: "32px",
               height: "1px",
               background: "rgba(245,222,179,0.3)",
-              margin: "18px 0",
+              margin: "12px 0",
             }}
           />
 
@@ -151,7 +153,7 @@ export default function Contact() {
                 alignItems: "center",
                 gap: "10px",
                 textDecoration: "none",
-                marginBottom: "10px",
+                marginBottom: "7px",
               }}
             >
               <div
@@ -190,9 +192,12 @@ export default function Contact() {
           style={{
             flex: 1,
             background: "#FFF8EE",
-            height: isMobile ? "auto" : "100%",
-            minHeight: isMobile ? "auto" : "100vh",
-            padding: isMobile ? "40px 24px" : "80px 100px",
+            height: "auto",
+            minHeight: "auto",
+            padding: isMobile ? "40px 24px" : "36px 40px",
+            maxWidth: "100%",
+            margin: 0,
+            borderRadius: 0,
             display: "flex",
             flexDirection: "column",
             justifyContent: "center",
@@ -200,7 +205,7 @@ export default function Contact() {
           }}
         >
           {/* Inner content — centered, max-width for readability */}
-          <div style={{ maxWidth: "560px", width: "100%", margin: "0 auto", display: "flex", flexDirection: "column", gap: "32px" }}>
+          <div style={{ maxWidth: "100%", width: "100%", margin: 0, display: "flex", flexDirection: "column", gap: "32px" }}>
           {/* Header */}
           <div>
             <div
@@ -216,7 +221,7 @@ export default function Contact() {
             </div>
             <div
               style={{
-                fontSize: "28px",
+                fontSize: "22px",
                 fontWeight: 800,
                 color: "#8B4513",
                 fontFamily: "serif",
@@ -246,7 +251,8 @@ export default function Contact() {
             style={{
               display: "flex",
               flexDirection: "column",
-              gap: "20px",
+              gap: "14px",
+              marginTop: "20px",
             }}
           >
             <div style={{ borderBottom: "1.5px solid rgba(139,69,19,0.2)", paddingBottom: "8px" }}>
@@ -284,7 +290,7 @@ export default function Contact() {
             <div style={{ borderBottom: "1.5px solid rgba(139,69,19,0.2)", paddingBottom: "8px" }}>
               <textarea
                 placeholder="Your Message"
-                rows={4}
+                rows={3}
                 style={{
                   width: "100%",
                   background: "transparent",
@@ -312,7 +318,7 @@ export default function Contact() {
                 color: "#F5DEB3",
                 border: "none",
                 borderRadius: "8px",
-                padding: "14px 32px",
+                padding: "11px 28px",
                 fontSize: "11px",
                 letterSpacing: "2px",
                 textTransform: "uppercase",

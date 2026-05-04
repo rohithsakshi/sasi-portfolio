@@ -154,8 +154,9 @@
   background-color: rgba(245, 222, 179, 0.2);
 
   @media (max-width: 768px) {
-    top: 32px;
-    right: 24px;
+    position: static;
+    display: inline-block;
+    margin-bottom: 12px;
   }
 }
 
@@ -175,7 +176,7 @@
 
   @media (max-width: 768px) {
     font-size: 22px;
-    padding-right: 80px;
+    padding-right: 0;
   }
 }
 

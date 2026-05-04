@@ -1,5 +1,3 @@
-"use client";
-
 import React, { useEffect, useRef } from "react";
 import * as THREE from "three";
 import styles from "./Hero.module.scss";
@@ -299,16 +297,16 @@ const Hero = () => {
       renderer.setSize(width, height);
       camera.aspect = width / height;
 
-      // Scale based on viewport — product stage presence
+      // Scale and position based on viewport — exact center
       if (window.innerWidth < 768) {
-        group.scale.set(0.75, 0.75, 0.75);
-        group.position.x = 0;
-      } else if (window.innerWidth < 1024) {
-        group.scale.set(0.9, 0.9, 0.9);
-        group.position.x = -0.2;
-      } else {
         group.scale.set(1.1, 1.1, 1.1);
-        group.position.x = -0.3;
+        group.position.set(0, 0, 0);
+      } else if (window.innerWidth < 1024) {
+        group.scale.set(1.25, 1.25, 1.25);
+        group.position.set(0, 0, 0);
+      } else {
+        group.scale.set(1.45, 1.45, 1.45);
+        group.position.set(0, 0, 0);
       }
 
       camera.updateProjectionMatrix();
@@ -410,15 +408,7 @@ const Hero = () => {
 
   return (
     <section className={styles.heroSection} ref={containerRef}>
-
-      {/* Full-screen 3D product stage */}
-      <div className={styles.productWrapper}>
-        <div className={styles.canvasContainer} ref={canvasContainerRef}>
-          <canvas ref={canvasRef} className={styles.webglCanvas} />
-        </div>
-      </div>
-
-      {/* Name + role overlaid top-left */}
+      {/* Name + role overlaid top-left — stays as-is */}
       <div className={styles.leftPane}>
         <div className={styles.textContainer}>
           <h1 className={styles.title}>SASIDHARAN</h1>
@@ -426,11 +416,21 @@ const Hero = () => {
         </div>
       </div>
 
+      <div className={styles.heroBody}>
+        {/* 3D Model Stage — full width */}
+        <div className={styles.modelColumn}>
+          <div className={styles.productWrapper}>
+            <div className={styles.canvasContainer} ref={canvasContainerRef}>
+              <canvas ref={canvasRef} className={styles.webglCanvas} />
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Bottom center label */}
       <div className={styles.productTagline}>
         Extensible Portable Extension Box
       </div>
-
     </section>
   );
 };

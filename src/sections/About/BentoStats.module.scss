@@ -80,6 +80,10 @@
   background-color: var(--cream);
   color: var(--saddle-brown);
 
+  @media (max-width: 768px) {
+    grid-row: span 1;
+  }
+
   &:hover {
     background-color: var(--saddle-brown);
     color: var(--wheat);
@@ -152,6 +156,10 @@
   background-color: var(--saddle-brown);
   color: var(--wheat);
 
+  @media (max-width: 768px) {
+    grid-row: span 1;
+  }
+
   .badge {
     color: var(--wheat);
     background: rgba(255, 255, 255, 0.1);
@@ -194,6 +202,10 @@
   color: var(--saddle-brown);
   line-height: 1;
   margin-bottom: 12px;
+
+  @media (max-width: 768px) {
+    font-size: 48px;
+  }
 }
 
 .numberXLarge {
@@ -256,11 +268,19 @@
   align-items: center;
   justify-content: center;
   background: rgba(122, 62, 29, 0.03);
-  box-shadow: inset 0 4px 12px rgba(0, 0, 0, 0.08); // Consistent inner shadow
+  box-shadow: inset 0 4px 12px rgba(0, 0, 0, 0.08);
   overflow: hidden;
-  padding: 15px; // Inner padding so image doesn't touch edges
+  padding: 15px;
   transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
   z-index: 5;
+
+  @media (max-width: 768px) {
+    width: 80px;
+    height: 80px;
+    top: 24px;
+    right: 24px;
+    padding: 8px;
+  }
 }
 
 .card:hover .arcContainer {

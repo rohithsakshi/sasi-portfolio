@@ -69,13 +69,15 @@ export default function Contact() {
           {/* Open to Work badge */}
           <div
             style={{
-              position: "absolute",
+              position: isMobile ? "static" : "absolute",
+              alignSelf: isMobile ? "flex-start" : "auto",
               top: "24px",
               left: "24px",
               background: "rgba(245,222,179,0.15)",
               border: "1px solid rgba(245,222,179,0.25)",
               borderRadius: "20px",
               padding: "5px 12px",
+              marginBottom: isMobile ? "20px" : "0",
             }}
           >
             <span

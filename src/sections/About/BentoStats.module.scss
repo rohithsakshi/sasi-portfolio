@@ -72,6 +72,12 @@
   color: var(--saddle-brown);
   opacity: 0.6;
   z-index: 2;
+
+  @media (max-width: 768px) {
+    top: 20px;
+    left: 20px;
+    font-size: 8px;
+  }
 }
 
 /* Card Placements */
@@ -193,6 +199,11 @@
 .cardResearch .cardContent {
   justify-content: flex-end;
   padding-bottom: 20px;
+
+  @media (max-width: 768px) {
+    padding-top: 40px; // Ensure space for the badge
+    justify-content: center;
+  }
 }
 
 .numberLarge {

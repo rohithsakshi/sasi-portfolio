@@ -414,26 +414,7 @@ const Hero = () => {
           <h1 className={styles.title}>SASIDHARAN</h1>
           <p className={styles.subtitle}>Product Designer</p>
           
-          <div className={styles.ctaGroup}>
-            <button 
-              className={styles.primaryBtn}
-              onClick={() => {
-                const target = document.getElementById('work');
-                if (target) target.scrollIntoView({ behavior: 'smooth' });
-              }}
-            >
-              View Work
-            </button>
-            <button 
-              className={styles.secondaryBtn}
-              onClick={() => {
-                const target = document.getElementById('contact');
-                if (target) target.scrollIntoView({ behavior: 'smooth' });
-              }}
-            >
-              Hire Me
-            </button>
-          </div>
+
         </div>
       </div>
 

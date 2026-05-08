@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import Lenis from "lenis";
-import Hero from "../src/sections/Hero/Hero";
+import ScrollHero from "../src/components/ScrollHero";
 import About from "../src/sections/About/About";
 import Navbar from "../src/components/Navigation/Navbar";
 import Skills from "../src/sections/Skills/Skills";
@@ -33,7 +33,7 @@ export default function Home() {
   return (
     <main>
       <Navbar />
-      <Hero />
+      <ScrollHero />
       <About />
       <Skills />
       <Projects />
